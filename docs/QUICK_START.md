@@ -32,6 +32,12 @@ nvm use 20
 # Bluesky app
 cd bluesky-app
 corepack yarn install --ignore-scripts
+
+# Compile internationalization messages (REQUIRED)
+yarn intl:compile
+
+# Configure for local PDS
+echo "EXPO_PUBLIC_PDS_URL=http://localhost:2583" > .env.local
 cd ..
 
 # Pinata integration
@@ -105,22 +111,62 @@ corepack pnpm -r build
 ```bash
 cd packages/pds
 cp example.env .env
-
-# Edit .env with minimal config (see INSTALLATION.md)
 ```
 
-### 4. Generate Cryptographic Keys
+Edit `.env` with this complete configuration:
+
+```bash
+# Server Configuration
+PDS_HOSTNAME="localhost"
+PDS_PORT="2583"
+
+# Data Storage (creates these directories - see step 4)
+PDS_DATA_DIRECTORY="data"
+PDS_BLOBSTORE_DISK_LOCATION="blobs"
+
+# Security
+PDS_JWT_SECRET="development-secret-change-in-production"
+PDS_ADMIN_PASSWORD="admin"
+
+# Cryptographic Keys (GENERATE in step 4)
+PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX="[generate-in-step-4]"
+PDS_REPO_SIGNING_KEY_K256_PRIVATE_KEY_HEX="[generate-in-step-4]"
+
+# Development Mode (REQUIRED for localhost HTTP)
+PDS_DEV_MODE="true"
+PDS_SERVICE_HANDLE_DOMAINS=".test"
+PDS_DISABLE_SSRF_PROTECTION="1"
+PDS_INVITE_REQUIRED="0"
+
+# Logging
+LOG_ENABLED="1"
+LOG_LEVEL="info"
+
+# AT Protocol Services
+PDS_DID_PLC_URL="https://plc.directory"
+PDS_BSKY_APP_VIEW_URL="https://api.bsky.app"
+PDS_BSKY_APP_VIEW_DID="did:web:api.bsky.app"
+PDS_CRAWLERS="https://bsky.network"
+
+# OAuth
+PDS_OAUTH_PROVIDER_NAME="Local Development PDS"
+PDS_OAUTH_PROVIDER_PRIMARY_COLOR="#7507e3"
+
+# Node.js
+NODE_TLS_REJECT_UNAUTHORIZED="0"
+```
+
+### 4. Generate Keys and Create Directories
 
 ```bash
 # Generate PLC rotation key
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-# Generate repo signing key
+# Generate repo signing key  
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 
-# Add both to .env:
-# PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX="[key1]"
-# PDS_REPO_SIGNING_KEY_K256_PRIVATE_KEY_HEX="[key2]"
+# Add both keys to .env, then create directories:
+mkdir -p data blobs
 ```
 
 ### 5. Start ATProto PDS

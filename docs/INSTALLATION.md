@@ -229,20 +229,76 @@ cp example.env .env
 Edit `.env` for local development (use `cursor .env` or any editor):
 
 ```bash
-# Minimal local development config
+# Server Configuration
 PDS_HOSTNAME="localhost"
 PDS_PORT="2583"
+
+# Data Storage (REQUIRED)
 PDS_DATA_DIRECTORY="data"
 PDS_BLOBSTORE_DISK_LOCATION="blobs"
+
+# Security Secrets (REQUIRED)
 PDS_JWT_SECRET="development-secret-change-in-production"
 PDS_ADMIN_PASSWORD="admin"
+
+# Cryptographic Keys (REQUIRED - generate these, see below)
+PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX="[generate-me]"
+PDS_REPO_SIGNING_KEY_K256_PRIVATE_KEY_HEX="[generate-me]"
+
+# Development Mode (REQUIRED for localhost HTTP)
+PDS_DEV_MODE="true"
+PDS_SERVICE_HANDLE_DOMAINS=".test"
+
+# Features
 PDS_INVITE_REQUIRED="0"
+PDS_DISABLE_SSRF_PROTECTION="1"
+LOG_ENABLED="1"
+LOG_LEVEL="info"
+
+# AT Protocol Services (Public Endpoints)
 PDS_DID_PLC_URL="https://plc.directory"
 PDS_BSKY_APP_VIEW_URL="https://api.bsky.app"
 PDS_BSKY_APP_VIEW_DID="did:web:api.bsky.app"
+PDS_CRAWLERS="https://bsky.network"
+
+# OAuth Provider Info
+PDS_OAUTH_PROVIDER_NAME="Local Development PDS"
+PDS_OAUTH_PROVIDER_PRIMARY_COLOR="#7507e3"
+
+# Node.js Settings
+NODE_TLS_REJECT_UNAUTHORIZED="0"
 ```
 
-**Note:** The `example.env` includes many optional fields for production deployments. The minimal config above is sufficient for local development. You can also generate private keys later if needed.
+**Generate Cryptographic Keys:**
+
+The PDS requires two 256-bit cryptographic keys. Generate them:
+
+```bash
+# From atproto/packages/pds directory
+# Generate PLC rotation key
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Output example: 735344574b2290ce11be4eaaa90ac25d401123e5d239144e4c2ed2ee78f40482
+
+# Generate repo signing key
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+# Output example: 8e2f9dad5dca5796c0b8193e6e085035d1e2d9792655c26d211c821ebb02fe99
+```
+
+Copy these generated keys into your `.env` file:
+
+- `PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX="[first-key]"`
+- `PDS_REPO_SIGNING_KEY_K256_PRIVATE_KEY_HEX="[second-key]"`
+
+**⚠️ Important:** Never commit these keys to version control!
+
+**Create Required Directories:**
+
+```bash
+# From atproto/packages/pds directory
+mkdir -p data blobs
+```
+
+**Note:** The `example.env` includes many optional fields for production deployments. The config above includes all REQUIRED fields for local development.
 
 **Start the PDS server:**
 
@@ -272,12 +328,17 @@ You should see output like:
 ```bash
 cd bluesky-app
 
+# Compile internationalization messages (required for first run)
+yarn intl:compile
+
 # Point to local PDS
 echo "EXPO_PUBLIC_PDS_URL=http://localhost:2583" > .env.local
 
 # Start app
 yarn web
 ```
+
+**Note:** The `intl:compile` command compiles translation files for all supported languages. This step is automatically run during `yarn install` on CI, but must be run manually for local development.
 
 ### 3. Start Pinata Integration Service
 
