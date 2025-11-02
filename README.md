@@ -18,6 +18,7 @@ See [Installation Guide](./docs/INSTALLATION.md) for detailed setup instructions
 ## Documentation
 
 - **[Installation Guide](./docs/INSTALLATION.md)** - Setup and installation instructions
+- **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - **[Architecture](./docs/ARCHITECTURE.md)** - System architecture and components
 - **[Development Guide](./docs/DEVELOPMENT.md)** - Running services and development workflow
 - **[Contributing](./docs/CONTRIBUTING.md)** - How to contribute to the project
