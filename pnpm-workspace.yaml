@@ -1,6 +1,8 @@
 packages:
   - 'bluesky-app'
   - 'atproto/packages/*'
+  - 'atproto/packages/internal/*'
+  - 'atproto/packages/oauth/*'
   - 'community-stream-lexicon'
   - 'pinata-integration'
 

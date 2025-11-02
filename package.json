@@ -4,14 +4,14 @@
   "description": "Bluesky Private Profile Integration - Orchestrator",
   "private": true,
   "scripts": {
-    "install:all": "pnpm install",
+    "install:all": "pnpm install && cd bluesky-app && corepack yarn install",
     "build:all": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
-    "dev:app": "pnpm --filter bluesky-app dev",
+    "dev:app": "cd bluesky-app && corepack yarn web",
     "dev:pds": "pnpm --filter @atproto/pds dev",
     "dev:lexicon": "pnpm --filter community-stream-lexicon dev",
     "dev:pinata": "pnpm --filter pinata-integration dev",
-    "start:all": "concurrently -n app,pds,pinata -c cyan,magenta,green \"pnpm dev:app\" \"pnpm dev:pds\" \"pnpm dev:pinata\"",
+    "start:all": "mkdir -p logs && concurrently -n app,pds,pinata -c cyan,magenta,green \"pnpm dev:app 2>&1 | tee logs/app.log\" \"pnpm dev:pds 2>&1 | tee logs/pds.log\" \"pnpm dev:pinata 2>&1 | tee logs/pinata.log\"",
     "setup": "node scripts/setup.js",
     "clean": "pnpm -r clean",
     "test": "pnpm -r test",
@@ -34,4 +34,3 @@
   "author": "CommunityStream",
   "license": "MIT"
 }
-

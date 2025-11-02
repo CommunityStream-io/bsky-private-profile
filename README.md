@@ -45,22 +45,18 @@ cursor workspace.code-workspace
 
 This opens a multi-root workspace with all components organized for efficient development.
 
-### Install All Dependencies (pnpm Workspace)
+### Install Dependencies
 
-This project uses **pnpm workspace** to manage all submodules efficiently.
+This project uses **pnpm workspace** for unified package management across all submodules.
 
 ```bash
-# Automated setup (recommended)
-./scripts/install-all.sh
-
-# Or manually with pnpm
-pnpm install
-pnpm -r build
+./scripts/install-all.sh    # Installs pnpm if needed, then installs & builds all packages
 ```
 
-**First time?** Run the setup wizard:
+Or manually:
+
 ```bash
-pnpm setup
+pnpm install && pnpm -r build
 ```
 
 ### Configure Local Development
@@ -110,37 +106,14 @@ cp env.example .env
 npm run dev
 ```
 
-### Run All Services
+### Run Services
 
-**Option 1: All services at once (recommended)**
 ```bash
-pnpm dev
-# Or with better output formatting:
-pnpm start:all
-```
-
-**Option 2: Individual services**
-```bash
-# Frontend (http://localhost:19006)
-pnpm dev:app
-
-# PDS (http://localhost:2583)
-pnpm dev:pds
-
-# Pinata Gateway (http://localhost:3000)
-pnpm dev:pinata
-```
-
-**Option 3: Separate terminals (traditional)**
-```bash
-# Terminal 1
-cd bluesky-app && yarn web
-
-# Terminal 2
-cd atproto/packages/pds && npm run start:dev
-
-# Terminal 3
-cd pinata-integration && npm run dev
+pnpm start:all              # All services with formatted output
+pnpm dev                    # All services in parallel
+pnpm dev:app                # Frontend only (localhost:19006)
+pnpm dev:pds                # PDS only (localhost:2583)
+pnpm dev:pinata             # Gateway only (localhost:3000)
 ```
 
 ### Create Test Accounts
@@ -157,44 +130,56 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
 
 ## 📋 Implementation Phases
 
-### Phase 0: ✅ Mis en Place - Repository Setup
+### Phase 0: ✅ Mis en Place - Repository Setup (COMPLETE)
+
 - [x] Clone and configure all submodules
 - [x] Set up multi-root workspace
 - [x] Configure development environment
+- [x] Fixed workspace configuration to include internal and oauth packages
+- [x] Resolved TypeScript configuration issues
+- [x] Installed all dependencies successfully
+- [x] Verified all services start successfully with `pnpm start:all`
 
 ### Phase 1: Pending Follow State
+
 - [ ] Add "pending" follow state to UI
 - [ ] Update follow button components
 - [ ] Handle pending state in profile queries
 
 ### Phase 2: Lexicon & Schema Extensions
+
 - [ ] Define private profile lexicon
 - [ ] Define follow request lexicon
 - [ ] Generate TypeScript types
 
 ### Phase 3: PDS Modifications
+
 - [ ] Add profile privacy storage
 - [ ] Implement follow request endpoints
 - [ ] Add access control layer
 - [ ] Implement content routing
 
 ### Phase 4: Pinata Private Gateway Integration
+
 - [ ] Implement per-profile gateway configuration
 - [ ] Add gateway provisioning
 - [ ] Implement token generation
 - [ ] Add blob upload routing
 
 ### Phase 5: Follow Request Notifications
+
 - [ ] Add follow-request notification type
 - [ ] Implement notification UI
 - [ ] Add approve/deny actions
 
 ### Phase 6: Profile Privacy Settings UI
+
 - [ ] Create privacy settings screen
 - [ ] Add profile privacy toggle
 - [ ] Display private profile indicators
 
 ### Phase 7: Content Access Control
+
 - [ ] Enforce post access control
 - [ ] Implement media token injection
 - [ ] Handle private content errors
@@ -301,4 +286,3 @@ MIT License - see LICENSE file for details
 ---
 
 **Built with ❤️ by CommunityStream**
-
