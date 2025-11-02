@@ -1,0 +1,34 @@
+meta {
+  name: Refresh Session
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.server.refreshSession
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{refreshToken}}
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.accessJwt) {
+    bru.setVar("accessToken", response.accessJwt);
+    bru.setVar("refreshToken", response.refreshJwt);
+  }
+}
+
+docs {
+  # Refresh Session
+  
+  Refreshes the access token using the refresh token.
+  
+  Use this when your access token expires.
+  
+  **Note:** New tokens are automatically saved to environment variables.
+}
+

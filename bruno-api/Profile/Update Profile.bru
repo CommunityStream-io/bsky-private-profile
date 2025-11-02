@@ -1,0 +1,54 @@
+meta {
+  name: Update Profile
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.putRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.actor.profile",
+    "rkey": "self",
+    "record": {
+      "$type": "app.bsky.actor.profile",
+      "displayName": "My Display Name",
+      "description": "This is my bio! 🚀",
+      "avatar": null,
+      "banner": null
+    }
+  }
+}
+
+docs {
+  # Update Profile
+  
+  Updates the user's profile information.
+  
+  ## Request Body
+  - `repo` (string): Your DID
+  - `collection` (string): Always "app.bsky.actor.profile"
+  - `rkey` (string): Always "self" for profile
+  - `record` (object): Profile data:
+    - `$type`: Record type
+    - `displayName`: Your display name
+    - `description`: Your bio
+    - `avatar`: Avatar blob reference (or null)
+    - `banner`: Banner blob reference (or null)
+  
+  **Note:** To set avatar/banner, first upload the image as a blob.
+}
+

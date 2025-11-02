@@ -1,0 +1,49 @@
+meta {
+  name: Create Post
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.createRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.feed.post",
+    "record": {
+      "$type": "app.bsky.feed.post",
+      "text": "Hello from my local PDS! 🎉",
+      "createdAt": "{{$isoTimestamp}}"
+    }
+  }
+}
+
+docs {
+  # Create Post
+  
+  Creates a new post on the AT Protocol network.
+  
+  ## Request Body
+  - `repo` (string): The DID of the repository (your account)
+  - `collection` (string): Always "app.bsky.feed.post"
+  - `record` (object): The post record containing:
+    - `$type`: Record type
+    - `text`: Post content
+    - `createdAt`: ISO timestamp
+  
+  ## Response
+  Returns the created record URI and CID.
+}
+

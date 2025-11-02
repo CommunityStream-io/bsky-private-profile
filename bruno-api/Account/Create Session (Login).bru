@@ -1,0 +1,51 @@
+meta {
+  name: Create Session (Login)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.server.createSession
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "identifier": "user2.test",
+    "password": "password123"
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.accessJwt) {
+    bru.setVar("accessToken", response.accessJwt);
+    bru.setVar("refreshToken", response.refreshJwt);
+    bru.setVar("did", response.did);
+  }
+}
+
+docs {
+  # Create Session (Login)
+  
+  Authenticates a user and creates a session.
+  
+  ## Request Body
+  - `identifier` (string): Handle or email
+  - `password` (string): User's password
+  
+  ## Response
+  Returns session tokens and account info:
+  - `accessJwt`: Access token (saved to environment)
+  - `refreshJwt`: Refresh token (saved to environment)
+  - `did`: User's DID (saved to environment)
+  - `handle`: User's handle
+  
+  **Note:** Access token is automatically saved to `{{accessToken}}` for use in other requests.
+}
+

@@ -25,6 +25,10 @@
       "path": "official-pds"
     },
     {
+      "name": "🧪 Bruno API Collection",
+      "path": "bruno-api"
+    },
+    {
       "name": "📁 Root",
       "path": "."
     }
@@ -52,6 +56,9 @@
       "**/dist/**": true,
       "**/build/**": true
     },
+    "bruno.defaultEnvironment": "local",
+    "bruno.autoSaveResponses": true,
+    "bruno.requestTimeout": 30000,
     "terminal.integrated.profiles.windows": {
       "Bluesky App": {
         "path": "C:\\Program Files\\Git\\bin\\bash.exe",
@@ -94,6 +101,13 @@
         "icon": "folder",
         "overrideName": true,
         "color": "terminal.ansiCyan"
+      },
+      "Bruno API": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/bruno-api' && exec bash --login -i"],
+        "icon": "beaker",
+        "overrideName": true,
+        "color": "terminal.ansiYellow"
       }
     },
     "terminal.integrated.defaultProfile.windows": "Git Bash",
@@ -195,7 +209,8 @@
       "dbaeumer.vscode-eslint",
       "esbenp.prettier-vscode",
       "ms-vscode.vscode-typescript-next",
-      "bradlc.vscode-tailwindcss"
+      "bradlc.vscode-tailwindcss",
+      "bruno-api-client.bruno"
     ]
   }
 }

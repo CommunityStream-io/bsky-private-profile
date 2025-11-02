@@ -71,11 +71,32 @@ This project supports two ways to run a Personal Data Server:
    - ⚠️ Cannot create accounts on Windows (filesystem limitation)
    - 🔧 Full control over source code
 
+## 🧪 API Testing with Bruno
+
+A complete Bruno API collection is included for testing the PDS:
+
+```bash
+# Open in VS Code (Bruno extension will auto-detect)
+code bruno-api/
+
+# Or use Bruno Desktop
+# Download from: https://www.usebruno.com/
+```
+
+**Quick Start:**
+1. Open the `bruno-api/` collection
+2. Select "local" environment
+3. Run `Account/Create Session (Login)` 
+4. Test other endpoints (tokens are auto-saved!)
+
+See [bruno-api/README.md](./bruno-api/README.md) for full documentation.
+
 ## Service URLs
 
 - **Bluesky App (Frontend):** http://localhost:19006
 - **PDS (Backend):** http://localhost:2583
 - **Pinata Gateway:** http://localhost:3000
+- **Bruno API Collection:** `bruno-api/`
 
 ## Getting Help
 

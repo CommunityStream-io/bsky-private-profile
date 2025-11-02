@@ -1,0 +1,32 @@
+meta {
+  name: Get Post Thread
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.feed.getPostThread?uri=at://{{did}}/app.bsky.feed.post/3m4oaq3ozfc2x
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  uri: at://{{did}}/app.bsky.feed.post/3m4oaq3ozfc2x
+}
+
+docs {
+  # Get Post Thread
+  
+  Retrieves a specific post and its thread (replies).
+  
+  ## Query Parameters
+  - `uri` (string): The AT-URI of the post
+  - `depth` (number, optional): How deep to fetch replies
+  
+  **Note:** Replace the rkey (last part of URI) with an actual post ID from your account.
+}
+

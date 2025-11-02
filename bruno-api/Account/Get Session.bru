@@ -1,0 +1,30 @@
+meta {
+  name: Get Session
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.server.getSession
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Session
+  
+  Retrieves the current session information.
+  
+  Requires authentication via Bearer token.
+  
+  ## Response
+  Returns current session details:
+  - `did`: User's DID
+  - `handle`: User's handle
+  - `email`: User's email (if available)
+}
+

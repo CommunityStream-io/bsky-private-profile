@@ -1,0 +1,41 @@
+meta {
+  name: Delete Post
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.deleteRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.feed.post",
+    "rkey": "3m4oaq3ozfc2x"
+  }
+}
+
+docs {
+  # Delete Post
+  
+  Deletes a specific post from the repository.
+  
+  ## Request Body
+  - `repo` (string): The DID of the repository
+  - `collection` (string): The collection type
+  - `rkey` (string): The record key (last part of the AT-URI)
+  
+  **Note:** Replace `rkey` with the actual record key you want to delete.
+}
+

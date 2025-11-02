@@ -1,0 +1,40 @@
+meta {
+  name: Get Profile
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.getProfile?actor={{did}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{did}}
+}
+
+docs {
+  # Get Profile
+  
+  Retrieves a user's profile information.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the user
+  
+  ## Response
+  Returns profile data including:
+  - `did`: User's DID
+  - `handle`: User's handle
+  - `displayName`: Display name
+  - `description`: Bio/description
+  - `avatar`: Avatar URL
+  - `followersCount`: Number of followers
+  - `followsCount`: Number of accounts following
+  - `postsCount`: Number of posts
+}
+

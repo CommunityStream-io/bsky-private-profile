@@ -1,0 +1,33 @@
+meta {
+  name: Describe Repo
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.describeRepo?repo={{did}}
+  body: none
+  auth: none
+}
+
+params:query {
+  repo: {{did}}
+}
+
+docs {
+  # Describe Repository
+  
+  Gets metadata about a repository (user account).
+  
+  ## Query Parameters
+  - `repo` (string): The DID or handle of the repository
+  
+  ## Response
+  Returns repository metadata:
+  - `handle`: User's handle
+  - `did`: User's DID
+  - `didDoc`: DID document with verification methods
+  - `collections`: List of record collections in the repo
+  - `handleIsCorrect`: Whether the handle resolves correctly
+}
+

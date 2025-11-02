@@ -1,0 +1,26 @@
+meta {
+  name: PDS Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/xrpc/_health
+  body: none
+  auth: none
+}
+
+docs {
+  # PDS Health Check
+  
+  Checks if the PDS is online and responding.
+  
+  ## Response
+  Returns:
+  - `version`: The PDS version number
+  
+  Example: `{"version":"0.4.188"}`
+  
+  This endpoint requires no authentication and is useful for monitoring.
+}
+

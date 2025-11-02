@@ -1,0 +1,46 @@
+meta {
+  name: List Records
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.listRecords?repo={{did}}&collection=app.bsky.feed.post
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  repo: {{did}}
+  collection: app.bsky.feed.post
+  ~limit: 50
+  ~cursor: 
+}
+
+docs {
+  # List Records
+  
+  Lists records from a specific collection in a repository.
+  
+  ## Query Parameters
+  - `repo` (string): The DID or handle
+  - `collection` (string): Collection to list from
+    - `app.bsky.feed.post` - Posts
+    - `app.bsky.feed.like` - Likes
+    - `app.bsky.graph.follow` - Follows
+    - `app.bsky.actor.profile` - Profile
+  - `limit` (number, optional): Max records to return
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Common Collections
+  - `app.bsky.feed.post` - User posts
+  - `app.bsky.feed.like` - Likes
+  - `app.bsky.feed.repost` - Reposts
+  - `app.bsky.graph.follow` - Following relationships
+  - `app.bsky.actor.profile` - Profile data
+}
+

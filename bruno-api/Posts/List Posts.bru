@@ -1,0 +1,39 @@
+meta {
+  name: List Posts
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.listRecords?repo={{did}}&collection=app.bsky.feed.post
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  repo: {{did}}
+  collection: app.bsky.feed.post
+}
+
+docs {
+  # List Posts
+  
+  Lists all posts from a repository (user account).
+  
+  ## Query Parameters
+  - `repo` (string): The DID or handle of the repository
+  - `collection` (string): The collection to list (app.bsky.feed.post)
+  - `limit` (number, optional): Maximum number of records to return
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Response
+  Returns an array of records with:
+  - `uri`: The AT-URI of the record
+  - `cid`: Content identifier
+  - `value`: The post content
+}
+

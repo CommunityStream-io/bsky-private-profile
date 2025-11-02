@@ -1,0 +1,21 @@
+# Bruno API Collection - Ignore sensitive data
+
+# Environment secrets (tokens get saved here)
+environments/*.local.bru
+!environments/local.bru
+
+# Response data
+*.response.json
+responses/
+
+# Bruno cache
+.bruno/
+
+# Temporary files
+*.tmp
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
