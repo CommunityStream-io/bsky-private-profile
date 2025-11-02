@@ -57,15 +57,18 @@ bsky-private-profile/               # Orchestrator repo
 
 This project supports two ways to run a Personal Data Server:
 
-1. **Official Docker PDS** (`official-pds/`) - Recommended for development
+1. **Official Docker PDS** (`official-pds/`) - **Recommended for Windows**
 
    - ✅ Easy Docker setup
    - ✅ No native compilation needed
+   - ✅ No Windows filesystem limitations
    - ✅ Production-ready
+   - 🔗 Fork: [CommunityStream-io/pds](https://github.com/CommunityStream-io/pds)
 
-2. **ATProto Monorepo PDS** (`atproto/`) - For advanced users
+2. **ATProto Monorepo PDS** (`atproto/`) - For advanced users (Linux/macOS/WSL2)
    - 🔧 Build from source
    - 🔧 Requires Node 20 + native build tools
+   - ⚠️ Cannot create accounts on Windows (filesystem limitation)
    - 🔧 Full control over source code
 
 ## Service URLs
