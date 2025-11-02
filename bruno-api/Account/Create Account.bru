@@ -1,0 +1,42 @@
+meta {
+  name: Create Account
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.server.createAccount
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "alice@test.local",
+    "handle": "alice.test",
+    "password": "password123"
+  }
+}
+
+docs {
+  # Create Account
+  
+  Creates a new account on the PDS (Personal Data Server).
+  
+  ## Request Body
+  - `email` (string, required): User's email address
+  - `handle` (string, required): User's handle (username)
+  - `password` (string, required): User's password
+  
+  ## Response
+  Returns the created account details including:
+  - `handle`: The account handle
+  - `did`: The decentralized identifier
+  - `accessJwt`: Access token for API requests
+  - `refreshJwt`: Refresh token for obtaining new access tokens
+}
+
