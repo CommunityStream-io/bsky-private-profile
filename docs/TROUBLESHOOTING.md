@@ -18,8 +18,9 @@ Common issues and solutions for the Bluesky Private Profile Integration project.
 | **Docker: Port 2583 already in use**                            | Stop other PDS: `taskkill //PID [PID] //F`                                     |
 | **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                      |
 | **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing                 |
-| **"Invalid handle" or "Unable to resolve handle"**              | Ensure `PDS_SERVICE_HANDLE_DOMAINS=".test"` and `PDS_DEV_MODE="true"` are set  |
+| **"Invalid handle" or "Unable to resolve handle"**              | First: Check if account exists. Then: Ensure `PDS_DEV_MODE="true"` is set      |
 | **"Handle TLD is invalid or disallowed"**                       | Use `.test` handles (e.g., `user.test`), NOT `.localhost` - only `.test` works |
+| **"Handle already taken"**                                      | Account exists! This means handle resolution should work. Try logging in.      |
 
 **⚠️ Windows Users:** The ATProto monorepo PDS cannot create accounts on Windows due to filesystem limitations (colons in DIDs). Use the [Official Docker PDS](https://github.com/CommunityStream-io/pds) (`official-pds/compose.local.yaml`) instead - it's Linux-based and just works!
 
@@ -1065,11 +1066,37 @@ curl "http://localhost:2583/xrpc/com.atproto.identity.resolveHandle?handle=user2
 
 This typically happens when:
 
-1. `PDS_DEV_MODE` is not set to `"true"`
-2. `PDS_SERVICE_HANDLE_DOMAINS` is not configured
-3. The PDS wasn't restarted after configuration changes
+1. **The account doesn't exist yet** ⚠️ (Most common!)
+2. `PDS_DEV_MODE` is not set to `"true"`
+3. `PDS_SERVICE_HANDLE_DOMAINS` is not configured
+4. The PDS wasn't restarted after configuration changes
+
+**⚠️ Important:** "Unable to resolve handle" usually just means **the account hasn't been created yet**, not a configuration problem!
 
 **Solution:**
+
+### Step 0: Check If Account Exists (Do This First!)
+
+Before troubleshooting configuration, verify the account exists:
+
+```bash
+# Try to create the account
+curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user@test.local",
+    "handle": "user.test",
+    "password": "password123"
+  }'
+```
+
+**Possible responses:**
+
+✅ **Account created successfully** - You'll get a JSON response with `did`, `accessJwt`, and `refreshJwt`. Handle resolution will now work!
+
+❌ **"Handle already taken"** - Account exists, proceed to configuration troubleshooting below.
+
+❌ **"Handle TLD is invalid or disallowed"** - Configuration issue, proceed to Step 1.
 
 ### Step 1: Verify PDS Configuration
 
@@ -1191,14 +1218,43 @@ If you want to test with real domain verification (not recommended for local dev
 
 ### Verification Checklist
 
+- [ ] **Account actually exists** (most common issue!)
 - [ ] PDS configuration has `PDS_DEV_MODE="true"`
 - [ ] PDS configuration has `PDS_SERVICE_HANDLE_DOMAINS=".test"`
 - [ ] PDS stopped and started (not just restarted)
-- [ ] Created account(s) with `.test` handles
 - [ ] Handle resolution works via API
 - [ ] Login works in Bluesky UI
 - [ ] No "invalid handle" errors
 - [ ] Profile displays correctly
+
+### Quick Test: Verify Your Accounts
+
+List all DIDs in your PDS database:
+
+```bash
+# Check what accounts exist
+docker exec pds-local sh -c "ls -la /pds/data/actors"
+```
+
+Or test handle resolution for known accounts:
+
+```bash
+# Test existing accounts
+curl "http://localhost:2583/xrpc/com.atproto.identity.resolveHandle?handle=user2.test"
+# ✅ Success: {"did":"did:plc:..."}
+# ❌ Doesn't exist: {"error":"InvalidRequest","message":"Unable to resolve handle"}
+```
+
+### Common Accounts Created During Setup
+
+If you followed the setup guides, you might have:
+
+| Handle               | Purpose                  | Password      |
+| -------------------- | ------------------------ | ------------- |
+| `user2.test`         | Original test account    | `password123` |
+| `alice2.test`        | Testing account creation | `password123` |
+| `stephen.test`       | Personal test account    | `password123` |
+| `mod-authority.test` | Moderation testing       | `password123` |
 
 ### Understanding Handle Resolution in Dev Mode
 
