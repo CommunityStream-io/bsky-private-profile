@@ -47,7 +47,110 @@
       "**/node_modules/**": true,
       "**/dist/**": true,
       "**/build/**": true
+    },
+    "terminal.integrated.profiles.windows": {
+      "Bluesky App": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/bluesky-app' && exec bash --login -i"],
+        "icon": "paintcan",
+        "overrideName": true,
+        "color": "terminal.ansiBlue"
+      },
+      "ATProto PDS": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/atproto' && exec bash --login -i"],
+        "icon": "gear",
+        "overrideName": true,
+        "color": "terminal.ansiGreen"
+      },
+      "Pinata Integration": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/pinata-integration' && exec bash --login -i"],
+        "icon": "globe",
+        "overrideName": true,
+        "color": "terminal.ansiYellow"
+      },
+      "Lexicon": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/community-stream-lexicon' && exec bash --login -i"],
+        "icon": "book",
+        "overrideName": true,
+        "color": "terminal.ansiMagenta"
+      },
+      "Root": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}' && exec bash --login -i"],
+        "icon": "folder",
+        "overrideName": true,
+        "color": "terminal.ansiCyan"
+      }
+    },
+    "terminal.integrated.defaultProfile.windows": "Git Bash",
+    "terminal.integrated.cwd": "${fileDirname}",
+    "terminal.integrated.automationProfile.windows": {
+      "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+      "args": ["--login", "-i"]
     }
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "🚀 Start All Services",
+        "dependsOn": [
+          "Start Bluesky App",
+          "Start PDS",
+          "Start Pinata"
+        ],
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
+        }
+      },
+      {
+        "label": "Start Bluesky App",
+        "type": "shell",
+        "command": "corepack yarn web",
+        "options": {
+          "cwd": "${workspaceFolder}/bluesky-app"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+          "group": "services"
+        }
+      },
+      {
+        "label": "Start PDS",
+        "type": "shell",
+        "command": "corepack pnpm --filter @atproto/pds dev",
+        "options": {
+          "cwd": "${workspaceFolder}/atproto"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+          "group": "services"
+        }
+      },
+      {
+        "label": "Start Pinata",
+        "type": "shell",
+        "command": "npm run dev",
+        "options": {
+          "cwd": "${workspaceFolder}/pinata-integration"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+          "group": "services"
+        }
+      }
+    ]
   },
   "extensions": {
     "recommendations": [

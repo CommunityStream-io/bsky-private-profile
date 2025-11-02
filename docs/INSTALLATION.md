@@ -4,8 +4,10 @@
 
 - Node.js 18+ (tested with Node 20+)
 - npm (comes with Node.js)
-- Python 3.13+ (required for native dependencies)
-  - Download at https://www.python.org/downloads/
+- **Python 3.11 or earlier** (required for native dependencies with `node-gyp`)
+  - ⚠️ **Important**: Python 3.12+ removed `distutils` which breaks `node-gyp`
+  - Download Python 3.11: https://www.python.org/downloads/release/python-3119/
+  - Or install `setuptools` if using Python 3.12+: `pip install setuptools`
 - Git
 - Cursor IDE (recommended)
 
@@ -65,16 +67,7 @@ corepack pnpm install
 cd ..
 ```
 
-**If you encounter `better-sqlite3` build errors on Windows**, you have options:
-
-1. **Install Visual Studio Build Tools** (recommended - see "Known Issues" section below)
-2. **Continue with partial install**: The installation may show errors for `better-sqlite3`, but other packages will install successfully. Some features may not work.
-3. **Install with optional dependencies skipped** (not recommended, may break functionality):
-   ```bash
-   cd atproto
-   corepack pnpm install --ignore-optional
-   cd ..
-   ```
+**If you encounter build errors**, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for solutions.
 
 ```bash
 # Install Pinata integration dependencies
@@ -114,39 +107,15 @@ npm run build
 cd ..
 ```
 
-## Known Issues
+## Common Issues
 
-### Windows: Visual Studio Build Tools Required
+Installation errors? See **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** for detailed solutions:
 
-On Windows, `better-sqlite3` requires Visual Studio C++ build tools to compile. If you see errors like:
-
-```
-gyp ERR! find VS You need to install Visual Studio including the "Desktop development with C++" workload.
-```
-
-**Solutions:**
-
-1. **Install Visual Studio Build Tools** (Recommended):
-
-   - Download from: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
-   - Select "Desktop development with C++" workload during installation
-   - Restart your terminal and try installing again
-
-2. **Install Visual Studio Community** (Full IDE):
-
-   - Download from: https://visualstudio.microsoft.com/downloads/
-   - During installation, select "Desktop development with C++" workload
-
-3. **Continue Without better-sqlite3** (Partial functionality):
-   - The installation will show warnings for `better-sqlite3` but other packages will install
-   - Some features may not work without `better-sqlite3`
-   - You can try installing later after setting up build tools
-
-### Python Required for Native Dependencies
-
-- Python 3.6+ is required for building native dependencies
-- If you encounter Python errors, install Python 3 from https://www.python.org/downloads/
-- Ensure Python is in your PATH
+- **Visual Studio Build Tools missing** (Windows)
+- **Python 3.12+ incompatibility**
+- **MSB8020 compiler errors**
+- **Workspace protocol errors**
+- And more...
 
 ## Configure Local Development
 
