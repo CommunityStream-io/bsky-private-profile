@@ -4,22 +4,34 @@
 
 - Node.js 18+ (tested with Node 20+)
 - npm (comes with Node.js)
-- **Python 3.11 or earlier** (required for native dependencies with `node-gyp`)
-  - ⚠️ **Important**: Python 3.12+ removed `distutils` which breaks `node-gyp`
-  - Download Python 3.11: https://www.python.org/downloads/release/python-3119/
-  - Or install `setuptools` if using Python 3.12+: `pip install setuptools`
 - Git
 - Cursor IDE (recommended)
 
-### Windows-Specific Requirements
+**Note:** Python is NOT required if you use `--ignore-scripts` (recommended approach). See "Native Module Build Tools" below if you need to compile native modules.
 
-**Visual Studio Build Tools** (required for native modules like `better-sqlite3`):
+### Native Module Build Tools (Optional)
 
-- Install **Visual Studio Build Tools** or **Visual Studio** with the "Desktop development with C++" workload
-- Download from: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
-- Or install via: `npm install -g windows-build-tools` (older approach)
+**Only needed if you remove `--ignore-scripts` flag.**
 
-**Alternative for Windows**: You can skip native module builds if you don't need `better-sqlite3` features. The installation will show warnings but other packages will install successfully.
+Native modules like `better-sqlite3` require build tools to compile:
+
+**Windows:**
+
+- Python 3.11 or earlier (3.12+ breaks `node-gyp`)
+- Visual Studio Build Tools with "Desktop development with C++" workload
+- Download: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
+
+**macOS:**
+
+- Python 3.11 or earlier
+- Xcode Command Line Tools: `xcode-select --install`
+
+**Linux:**
+
+- Python 3.11 or earlier
+- Build essentials: `sudo apt-get install build-essential` (Ubuntu/Debian)
+
+See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for detailed build tool setup and Python configuration.
 
 **Note:** This project uses **corepack** to automatically manage package managers:
 
@@ -52,32 +64,34 @@ corepack enable
 
 ### Install All Dependencies
 
-Install dependencies for each submodule:
+Install dependencies for each submodule using `--ignore-scripts` to skip native module builds:
 
 ```bash
 # Install Bluesky app dependencies with Yarn (managed by corepack)
 cd bluesky-app
-corepack yarn install
+corepack yarn install --ignore-scripts
 cd ..
 
 # Install atproto dependencies with pnpm (managed by corepack)
 # Note: Install from atproto root, not from packages/pds
 cd atproto
-corepack pnpm install
+corepack pnpm install --ignore-scripts
 cd ..
 ```
 
-**If you encounter build errors**, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for solutions.
+**Why `--ignore-scripts`?** This skips compilation of native modules like `better-sqlite3`, avoiding build tool requirements on Windows/macOS. Most features work without these native modules.
+
+**Need native modules?** If you specifically need `better-sqlite3` or other native modules, see [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for build tool installation.
 
 ```bash
 # Install Pinata integration dependencies
 cd pinata-integration
-npm install
+npm install --ignore-scripts
 cd ..
 
 # Install community-stream-lexicon dependencies (if needed)
 cd community-stream-lexicon
-npm install
+npm install --ignore-scripts
 cd ..
 ```
 
@@ -109,12 +123,14 @@ cd ..
 
 ## Common Issues
 
-Installation errors? See **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** for detailed solutions:
+Using `--ignore-scripts` should avoid most build errors.
 
-- **Visual Studio Build Tools missing** (Windows)
-- **Python 3.12+ incompatibility**
-- **MSB8020 compiler errors**
+If you still encounter issues, see **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** for detailed solutions:
+
 - **Workspace protocol errors**
+- **Permission issues**
+- **Git submodule problems**
+- **Installing native modules** (if you need them)
 - And more...
 
 ## Configure Local Development
@@ -125,7 +141,7 @@ Installation errors? See **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** for deta
 cd atproto/packages/pds
 
 # Copy environment template
-cp .env.example .env
+cp example.env .env
 
 # Edit .env with:
 # PDS_HOSTNAME=localhost

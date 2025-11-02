@@ -6,7 +6,24 @@ Common issues and solutions for the Bluesky Private Profile Integration project.
 
 On Windows, `better-sqlite3` requires Visual Studio C++ build tools to compile.
 
-### Symptoms
+### Quick Workaround (Recommended)
+
+Skip native module builds entirely:
+
+```bash
+cd atproto
+corepack pnpm install --ignore-scripts
+cd ..
+
+# For Bluesky app
+cd bluesky-app
+corepack yarn install --ignore-scripts
+cd ..
+```
+
+This bypasses the compilation step. Most features will work without `better-sqlite3`.
+
+### Symptoms (if not using --ignore-scripts)
 
 ```
 gyp ERR! find VS You need to install Visual Studio including the "Desktop development with C++" workload.
@@ -18,9 +35,9 @@ Or:
 error MSB8020: The build tools for v142 (Platform Toolset = 'v142') cannot be found.
 ```
 
-### Solutions
+### Solutions (if you need better-sqlite3)
 
-#### 1. Install Visual Studio Build Tools (Recommended)
+#### 1. Install Visual Studio Build Tools
 
 1. Download from: https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022
 2. **During installation, select "Desktop development with C++" workload**
@@ -155,6 +172,7 @@ prebuild-install warn install No prebuilt binaries found (target=24.5.0 runtime=
 This is **not an error**, just a warning. It means `better-sqlite3` will compile from source instead of using a prebuilt binary.
 
 **What happens next:**
+
 - If you have Visual Studio Build Tools installed correctly, compilation will succeed
 - If build tools are missing, you'll see the MSB8020 error (see above)
 
@@ -163,12 +181,14 @@ This is **not an error**, just a warning. It means `better-sqlite3` will compile
 ### Solutions
 
 1. **Clear npm/pnpm cache:**
+
    ```bash
    npm cache clean --force
    corepack pnpm store prune
    ```
 
 2. **Delete node_modules and try again:**
+
    ```bash
    # In each submodule
    rm -rf node_modules
@@ -239,4 +259,3 @@ git submodule update --init --recursive
    - Node.js version (`node --version`)
    - Python version (`python --version`)
    - Visual Studio Build Tools version (if Windows)
-
