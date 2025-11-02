@@ -150,8 +150,6 @@ cp example.env .env
 
 # Initialize database (from atproto root)
 cd ../..
-corepack pnpm --filter @atproto/pds db:migrate
-
 # Start PDS (from atproto root)
 corepack pnpm --filter @atproto/pds dev
 ```
@@ -160,8 +158,6 @@ Or you can use npm scripts directly in the pds package:
 
 ```bash
 cd atproto/packages/pds
-# After installing from atproto root with pnpm, you can use npm here
-npm run db:migrate
 npm run dev
 ```
 
