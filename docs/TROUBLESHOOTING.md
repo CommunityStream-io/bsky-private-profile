@@ -19,7 +19,7 @@ Common issues and solutions for the Bluesky Private Profile Integration project.
 | **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                 |
 | **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing            |
 
-**⚠️ Windows Users:** The ATProto monorepo PDS cannot create accounts on Windows due to filesystem limitations (colons in DIDs). Use the [Official Docker PDS](https://github.com/bluesky-social/pds) (`official-pds/compose.local.yaml`) instead - it's Linux-based and just works!
+**⚠️ Windows Users:** The ATProto monorepo PDS cannot create accounts on Windows due to filesystem limitations (colons in DIDs). Use the [Official Docker PDS](https://github.com/CommunityStream-io/pds) (`official-pds/compose.local.yaml`) instead - it's Linux-based and just works!
 
 ## Environment Variables Reference
 

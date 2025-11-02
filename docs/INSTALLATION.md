@@ -247,7 +247,7 @@ docker compose -f compose.local.yaml restart
 docker exec -it pds-local sh
 ```
 
-**Note:** The `compose.local.yaml` is simplified for local development (no Caddy/TLS, no auto-updates). For production deployment, see the [official documentation](https://github.com/bluesky-social/pds)
+**Note:** The `compose.local.yaml` is simplified for local development (no Caddy/TLS, no auto-updates). For production deployment, see the [upstream documentation](https://github.com/bluesky-social/pds) or our fork at [CommunityStream-io/pds](https://github.com/CommunityStream-io/pds)
 
 ### Option B: ATProto Monorepo PDS (Advanced)
 
