@@ -126,20 +126,58 @@ npm config get python
 
 ## Node Version Issues
 
-### Node 24.5.0 and better-sqlite3
+### Node 24+ and better-sqlite3 Compatibility (IMPORTANT)
 
-If you see C++20 related errors with Node 24.5.0, the issue is that Node 24+ requires C++20 but `better-sqlite3` may compile with C++17.
+**This is the most common issue!** Node 24+ has breaking changes that cause `better-sqlite3` to fail.
 
-**Solutions:**
+**Symptoms:**
 
-1. Install complete Visual Studio Build Tools (see above)
-2. Or use Node 20 LTS:
-   ```bash
-   nvm use 20
-   # or
-   nvm install 20
-   nvm use 20
-   ```
+```
+Error: Could not locate the bindings file. Tried:
+ → C:\...\better-sqlite3\build\better_sqlite3.node
+```
+
+Or compilation errors about missing Visual Studio components even when installed.
+
+**Solution: Use Node 20 LTS (Required)**
+
+This project **requires Node 20 LTS** and includes a `.nvmrc` file for easy version management:
+
+```bash
+# Navigate to project root
+cd ~/bsky-private-profile
+
+# If you have nvm installed:
+nvm use
+
+# Or install Node 20 first:
+nvm install 20
+nvm use 20
+
+# Verify
+node --version  # Should show v20.x.x
+```
+
+**After switching Node versions, you MUST reinstall dependencies:**
+
+```bash
+# Clean up
+cd atproto
+rm -rf node_modules
+rm -rf packages/pds/node_modules
+
+# Reinstall (better-sqlite3 will compile automatically)
+corepack pnpm install
+
+# Build
+corepack pnpm --filter @atproto/pds build
+```
+
+**Don't have nvm?**
+- **Windows**: https://github.com/coreybutler/nvm-windows/releases
+- **macOS/Linux**: https://github.com/nvm-sh/nvm
+
+**Why Node 20?** Node 24 is too new and many native modules (like `better-sqlite3`) don't have prebuilt binaries or updated build configurations for it yet.
 
 ## Workspace Protocol Errors
 
@@ -249,6 +287,139 @@ git submodule foreach --recursive git reset --hard
 git submodule update --init --recursive
 ```
 
+## PDS Configuration and Startup Issues
+
+### Error: "Must configure either S3 or disk blobstore"
+
+This error occurs when the PDS `.env` file is missing or not being loaded properly.
+
+**Symptoms:**
+
+```
+❌ Failed to start PDS server: Error: Must configure either S3 or disk blobstore
+    at envToCfg (C:\Users\...\atproto\packages\pds\dist\config\config.js:79:15)
+```
+
+**Solutions:**
+
+#### 1. Ensure .env File Exists
+
+```bash
+cd atproto/packages/pds
+cp example.env .env
+```
+
+#### 2. Configure Required Variables
+
+Edit `.env` with minimal local development configuration:
+
+```bash
+PDS_HOSTNAME="localhost"
+PDS_PORT="2583"
+PDS_DATA_DIRECTORY="data"
+PDS_BLOBSTORE_DISK_LOCATION="blobs"
+PDS_JWT_SECRET="development-secret-change-in-production"
+PDS_ADMIN_PASSWORD="admin"
+PDS_INVITE_REQUIRED="0"
+PDS_DISABLE_SSRF_PROTECTION="1"
+LOG_ENABLED="1"
+LOG_LEVEL="info"
+PDS_DID_PLC_URL="https://plc.directory"
+PDS_BSKY_APP_VIEW_URL="https://api.bsky.app"
+PDS_BSKY_APP_VIEW_DID="did:web:api.bsky.app"
+PDS_CRAWLERS="https://bsky.network"
+```
+
+#### 3. Verify start-dev.js Loads .env
+
+The `start-dev.js` script must load the `.env` file. Ensure it contains:
+
+```javascript
+// Load environment variables from .env file
+require('dotenv').config()
+```
+
+This should be at the top of the file before requiring the PDS modules.
+
+### Error: "Must configure plc rotation key"
+
+This error occurs when cryptographic keys are missing from the configuration.
+
+**Symptoms:**
+
+```
+❌ Failed to start PDS server: Error: Must configure plc rotation key
+    at envToSecrets (C:\Users\...\atproto\packages\pds\dist\config\secrets.js:22:15)
+```
+
+**Solution:**
+
+Generate and add required cryptographic keys to your `.env` file:
+
+```bash
+# From atproto/packages/pds directory
+# Generate PLC rotation key (256-bit hex)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Generate repo signing key (256-bit hex)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Add both keys to your `.env` file:
+
+```bash
+PDS_PLC_ROTATION_KEY_K256_PRIVATE_KEY_HEX="[generated-key-1]"
+PDS_REPO_SIGNING_KEY_K256_PRIVATE_KEY_HEX="[generated-key-2]"
+```
+
+**Important:** Keep these keys secure and never commit them to version control!
+
+### PDS Won't Start - General Checklist
+
+If the PDS fails to start, verify:
+
+1. **All dependencies are installed:**
+   ```bash
+   cd atproto
+   corepack pnpm install --ignore-scripts
+   ```
+
+2. **PDS is built:**
+   ```bash
+   corepack pnpm --filter @atproto/pds build
+   ```
+
+3. **`.env` file exists and is in the correct location:**
+   ```bash
+   cd packages/pds
+   ls -la .env  # Should exist
+   ```
+
+4. **`dotenv` package is available:**
+   ```bash
+   # It should be in the atproto root package.json devDependencies
+   cat ../../package.json | grep dotenv
+   ```
+
+5. **Start the server:**
+   ```bash
+   cd ../..  # Back to atproto root
+   corepack pnpm --filter @atproto/pds start
+   ```
+
+### Expected Successful Output
+
+When properly configured, you should see:
+
+```
+🚀 Starting PDS server...
+✅ PDS Server started successfully!
+🌐 Server URL: http://localhost:2583
+📍 Hostname: localhost
+🔌 Port: 2583
+Press Ctrl+C to stop the server
+```
+
 ## Still Having Issues?
 
 1. Check [GitHub Issues](https://github.com/CommunityStream-io/bsky-private-profile/issues)
@@ -259,3 +430,5 @@ git submodule update --init --recursive
    - Node.js version (`node --version`)
    - Python version (`python --version`)
    - Visual Studio Build Tools version (if Windows)
+   - Whether you used `--ignore-scripts` during installation
+   - Contents of your `.env` file (with secrets redacted)

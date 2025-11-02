@@ -2,7 +2,10 @@
 
 ## Prerequisites
 
-- Node.js 18+ (tested with Node 20+)
+- **Node.js 20 LTS (Required)**
+  - Node 24+ has compatibility issues with `better-sqlite3`
+  - We recommend using [nvm](https://github.com/nvm-sh/nvm) or [nvm-windows](https://github.com/coreybutler/nvm-windows)
+  - The project includes a `.nvmrc` file for automatic version switching
 - npm (comes with Node.js)
 - Git
 - Cursor IDE (recommended)
@@ -51,6 +54,43 @@ If you already cloned without `--recursive`:
 ```bash
 git submodule update --init --recursive
 ```
+
+## Set Up Node Version
+
+This project requires Node.js 20 LTS. Use nvm to switch to the correct version:
+
+### Windows (nvm-windows)
+
+```bash
+# nvm-windows doesn't auto-read .nvmrc, so specify version explicitly
+nvm install 20
+nvm use 20
+
+# OR use the helper script
+./scripts/use-node-version.bat
+
+# Verify you're on Node 20
+node --version  # Should show v20.x.x
+```
+
+### macOS/Linux (nvm)
+
+```bash
+# Unix nvm reads .nvmrc automatically
+nvm use
+
+# Or manually
+nvm install 20
+nvm use 20
+
+# Verify
+node --version  # Should show v20.x.x
+```
+
+**Don't have nvm?**
+
+- **macOS/Linux**: Install from https://github.com/nvm-sh/nvm
+- **Windows**: Install from https://github.com/coreybutler/nvm-windows/releases
 
 ## Install Dependencies
 
@@ -137,29 +177,59 @@ If you still encounter issues, see **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)*
 
 ### 1. Set Up Local PDS
 
-```bash
-cd atproto/packages/pds
+The PDS needs to be built before it can be started. Since it depends on other atproto packages, build all packages:
 
-# Copy environment template
+```bash
+# Build all atproto packages (from atproto root)
+# This may take a few minutes
+cd atproto
+corepack pnpm -r build
+
+# Set up environment configuration
+cd packages/pds
 cp example.env .env
-
-# Edit .env with:
-# PDS_HOSTNAME=localhost
-# PDS_PORT=2583
-# PDS_JWT_SECRET=your-secret-key
-
-# Initialize database (from atproto root)
-cd ../..
-# Start PDS (from atproto root)
-corepack pnpm --filter @atproto/pds dev
 ```
 
-Or you can use npm scripts directly in the pds package:
+Edit `.env` for local development (use `cursor .env` or any editor):
 
 ```bash
-cd atproto/packages/pds
-npm run dev
+# Minimal local development config
+PDS_HOSTNAME="localhost"
+PDS_PORT="2583"
+PDS_DATA_DIRECTORY="data"
+PDS_BLOBSTORE_DISK_LOCATION="blobs"
+PDS_JWT_SECRET="development-secret-change-in-production"
+PDS_ADMIN_PASSWORD="admin"
+PDS_INVITE_REQUIRED="0"
+PDS_DID_PLC_URL="https://plc.directory"
+PDS_BSKY_APP_VIEW_URL="https://api.bsky.app"
+PDS_BSKY_APP_VIEW_DID="did:web:api.bsky.app"
 ```
+
+**Note:** The `example.env` includes many optional fields for production deployments. The minimal config above is sufficient for local development. You can also generate private keys later if needed.
+
+**Start the PDS server:**
+
+```bash
+# From atproto/packages/pds directory
+npm run start
+
+# Or from atproto root directory
+cd ../..
+corepack pnpm --filter @atproto/pds start
+```
+
+You should see output like:
+
+```
+🚀 Starting PDS server...
+✅ PDS Server started successfully!
+🌐 Server URL: http://localhost:2583
+📍 Hostname: localhost
+🔌 Port: 2583
+```
+
+**Note:** A custom `start-dev.js` script has been added to the PDS package to make it easier to run the server in development mode. The `dev` command only watches template files and doesn't start the actual server.
 
 ### 2. Configure Bluesky App
 
