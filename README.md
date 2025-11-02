@@ -19,10 +19,14 @@ bsky-private-profile/               # Orchestrator repo
 
 ### Prerequisites
 
-- Node.js 18+
-- Yarn
+- Node.js 18+ (tested with Node 20+)
+- pnpm 8+ (for workspace management)
+- Python 3.6+ (required for native dependencies in Bluesky app)
+  - Download at https://www.python.org/downloads/
 - Git
 - Cursor IDE (recommended)
+
+**Note:** This project uses **corepack** to automatically manage package managers. The Bluesky app uses Yarn, while other packages use pnpm.
 
 ### Clone with All Submodules
 
@@ -47,17 +51,40 @@ This opens a multi-root workspace with all components organized for efficient de
 
 ### Install Dependencies
 
-This project uses **pnpm workspace** for unified package management across all submodules.
+This project uses **pnpm workspace** for unified package management across all submodules, with **corepack** to manage the Bluesky app's Yarn dependencies.
+
+#### Enable Corepack (one-time setup)
 
 ```bash
-./scripts/install-all.sh    # Installs pnpm if needed, then installs & builds all packages
+corepack enable
+```
+
+#### Install All Dependencies
+
+```bash
+pnpm install:all    # Installs all workspace packages + Bluesky app with Yarn
 ```
 
 Or manually:
 
 ```bash
-pnpm install && pnpm -r build
+# Install workspace packages (PDS, Pinata, Lexicon)
+pnpm install
+
+# Install Bluesky app dependencies with Yarn (managed by corepack)
+cd bluesky-app && corepack yarn install
 ```
+
+#### Build All Packages
+
+```bash
+pnpm build:all
+```
+
+**Known Issues:**
+
+- The Bluesky app requires Python 3.6+ for building native dependencies (`better-sqlite3`)
+- If you encounter Python errors, install Python 3 and ensure it's in your PATH
 
 ### Configure Local Development
 
@@ -109,12 +136,24 @@ npm run dev
 ### Run Services
 
 ```bash
-pnpm start:all              # All services with formatted output
+pnpm start:all              # All services with formatted output + logs to logs/
 pnpm dev                    # All services in parallel
 pnpm dev:app                # Frontend only (localhost:19006)
 pnpm dev:pds                # PDS only (localhost:2583)
 pnpm dev:pinata             # Gateway only (localhost:3000)
 ```
+
+**Service URLs:**
+
+- **Bluesky App (Frontend):** http://localhost:19006
+- **PDS (Backend):** http://localhost:2583
+- **Pinata Gateway:** http://localhost:3000
+
+**Logs:** When using `pnpm start:all`, service logs are saved to:
+
+- `logs/app.log` - Bluesky app output
+- `logs/pds.log` - PDS server output
+- `logs/pinata.log` - Pinata gateway output
 
 ### Create Test Accounts
 
@@ -133,12 +172,16 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
 ### Phase 0: ✅ Mis en Place - Repository Setup (COMPLETE)
 
 - [x] Clone and configure all submodules
-- [x] Set up multi-root workspace
+- [x] Set up multi-root workspace in Cursor
 - [x] Configure development environment
-- [x] Fixed workspace configuration to include internal and oauth packages
-- [x] Resolved TypeScript configuration issues
-- [x] Installed all dependencies successfully
-- [x] Verified all services start successfully with `pnpm start:all`
+- [x] Set up corepack for package manager management
+- [x] Fixed workspace configuration to include `atproto/packages/internal/*` and `atproto/packages/oauth/*`
+- [x] Resolved TypeScript configuration issues in community-stream-lexicon
+- [x] Installed all dependencies (2,666+ packages)
+- [x] Configured logging for all services (logs saved to `logs/` directory)
+- [x] Verified PDS and Pinata services start successfully
+
+**Known Limitation:** Bluesky app requires Python 3.6+ for native dependencies. Install Python to run the web frontend.
 
 ### Phase 1: Pending Follow State
 

@@ -4,25 +4,26 @@
   "description": "Bluesky Private Profile Integration - Orchestrator",
   "private": true,
   "scripts": {
-    "install:all": "pnpm install && cd bluesky-app && corepack yarn install",
-    "build:all": "pnpm -r build",
-    "dev": "pnpm -r --parallel dev",
+    "install:all": "node scripts/install-manual.js",
+    "install:manual": "node scripts/install-manual.js",
     "dev:app": "cd bluesky-app && corepack yarn web",
-    "dev:pds": "pnpm --filter @atproto/pds dev",
-    "dev:lexicon": "pnpm --filter community-stream-lexicon dev",
-    "dev:pinata": "pnpm --filter pinata-integration dev",
-    "start:all": "mkdir -p logs && concurrently -n app,pds,pinata -c cyan,magenta,green \"pnpm dev:app 2>&1 | tee logs/app.log\" \"pnpm dev:pds 2>&1 | tee logs/pds.log\" \"pnpm dev:pinata 2>&1 | tee logs/pinata.log\"",
+    "dev:pds": "cd atproto && pnpm --filter @atproto/pds dev",
+    "dev:lexicon": "cd community-stream-lexicon && npm run dev",
+    "dev:pinata": "cd pinata-integration && npm run dev",
+    "start:all": "concurrently -n app,lexicon,pinata -c cyan,yellow,green \"npm run dev:app\" \"npm run dev:lexicon\" \"npm run dev:pinata\"",
+    "start:backend": "concurrently -n lexicon,pinata -c yellow,green \"npm run dev:lexicon\" \"npm run dev:pinata\"",
     "setup": "node scripts/setup.js",
-    "clean": "pnpm -r clean",
-    "test": "pnpm -r test",
-    "lint": "pnpm -r lint"
+    "clean": "node scripts/clean.js",
+    "clean:deep": "node scripts/clean.js --deep",
+    "nuke": "node scripts/clean.js --deep && node scripts/install-manual.js",
+    "test": "echo 'Run tests in each submodule individually'",
+    "lint": "echo 'Run linting in each submodule individually'"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.0.0"
   },
   "keywords": [
     "bluesky",
