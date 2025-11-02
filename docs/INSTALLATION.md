@@ -185,33 +185,88 @@ Build from source, requires Node 20 and native module compilation.
 
 ### Option A: Official Docker PDS (Recommended)
 
-The official PDS uses Docker and is much simpler to set up. See the [official PDS documentation](https://github.com/bluesky-social/pds) for detailed instructions.
+The official PDS uses Docker and is much simpler to set up. **This is the recommended option for Windows** because it avoids filesystem limitations (Windows doesn't allow colons in directory names, but DIDs like `did:plc:xxx` contain colons).
 
-**Quick Start:**
+**Why Docker PDS?**
+
+- ✅ Runs Linux in container (no Windows filesystem issues)
+- ✅ No native module compilation needed
+- ✅ Pre-built image ready to use
+- ✅ Simple configuration
+- ✅ Built-in admin tools (`pdsadmin`)
+
+**Prerequisites:**
+
+- **Docker Desktop for Windows**: https://docs.docker.com/desktop/install/windows-install/
+- Ensure Docker Desktop is running (check system tray for Docker icon)
+
+**Local Development Setup:**
 
 ```bash
 cd official-pds
 
-# Follow the installer script (Ubuntu/Debian) or manual Docker setup
-# See: https://github.com/bluesky-social/pds#readme
+# Create data directory
+mkdir -p data
+
+# Start the PDS using local development compose file
+docker compose -f compose.local.yaml up -d
+
+# View logs (optional)
+docker compose -f compose.local.yaml logs -f pds
 ```
 
-The official PDS includes:
+**Verify it's running:**
 
-- ✅ Docker Compose setup (no native compilation)
-- ✅ Automatic TLS/HTTPS with Caddy
-- ✅ Built-in admin tools (`pdsadmin`)
-- ✅ Production-ready configuration
+```bash
+curl http://localhost:2583/xrpc/_health
+# Should return: {"version":"0.4.x"}
+```
+
+**Create a test account:**
+
+```bash
+curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user1@test.local",
+    "handle": "user1.test",
+    "password": "password123"
+  }'
+```
+
+**Managing the Docker PDS:**
+
+```bash
+# Stop
+docker compose -f compose.local.yaml down
+
+# Restart
+docker compose -f compose.local.yaml restart
+
+# Access container shell
+docker exec -it pds-local sh
+```
+
+**Note:** The `compose.local.yaml` is simplified for local development (no Caddy/TLS, no auto-updates). For production deployment, see the [official documentation](https://github.com/bluesky-social/pds)
 
 ### Option B: ATProto Monorepo PDS (Advanced)
 
 Build the PDS from the atproto monorepo source. This requires Node 20 and compiling native modules.
+
+**⚠️ Windows Limitation:** The ATProto monorepo PDS **cannot create accounts on Windows** because it uses DIDs (like `did:plc:xxx`) as directory names, and colons are illegal in Windows file paths. This works on Linux/macOS but fails on Windows.
+
+**Solutions for Windows users:**
+
+- Use **Option A (Docker PDS)** - recommended ✅
+- Use **WSL2** (Windows Subsystem for Linux) to run the monorepo PDS
+- Use this option only for **reading/studying the code**, not for running
 
 **Requirements:**
 
 - Node 20 LTS
 - Visual Studio Build Tools (Windows) or build-essential (Linux)
 - All atproto packages built
+- **Linux/macOS or WSL2** (for account creation to work)
 
 The PDS needs to be built before it can be started. Since it depends on other atproto packages, build all packages:
 
@@ -233,9 +288,10 @@ Edit `.env` for local development (use `cursor .env` or any editor):
 PDS_HOSTNAME="localhost"
 PDS_PORT="2583"
 
-# Data Storage (REQUIRED)
-PDS_DATA_DIRECTORY="data"
-PDS_BLOBSTORE_DISK_LOCATION="blobs"
+# Data Storage (REQUIRED - use ABSOLUTE PATHS)
+PDS_DATA_DIRECTORY="C:/Users/trifo/bsky-private-profile/atproto/packages/pds/data"
+PDS_BLOBSTORE_DISK_LOCATION="C:/Users/trifo/bsky-private-profile/atproto/packages/pds/blobs"
+PDS_ACTOR_STORE_DIRECTORY="C:/Users/trifo/bsky-private-profile/atproto/packages/pds/data/actors"
 
 # Security Secrets (REQUIRED)
 PDS_JWT_SECRET="development-secret-change-in-production"
@@ -295,10 +351,17 @@ Copy these generated keys into your `.env` file:
 
 ```bash
 # From atproto/packages/pds directory
-mkdir -p data blobs
+mkdir -p data blobs data/actors
 ```
 
-**Note:** The `example.env` includes many optional fields for production deployments. The config above includes all REQUIRED fields for local development.
+**Important Notes:**
+
+- The `example.env` includes many optional fields for production deployments
+- The config above includes all REQUIRED fields for local development
+- **Use absolute paths** for `PDS_DATA_DIRECTORY` and `PDS_BLOBSTORE_DISK_LOCATION`
+  - Relative paths only work when running `node ./start-dev.js` directly from `packages/pds`
+  - When using `corepack pnpm --filter`, the working directory is `atproto` root, not `packages/pds`
+  - Replace `C:/Users/trifo/...` with your actual path
 
 **Start the PDS server:**
 

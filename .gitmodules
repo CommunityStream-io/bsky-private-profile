@@ -12,4 +12,4 @@
 	url = https://github.com/CommunityStream-io/pinata-integration.git
 [submodule "official-pds"]
 	path = official-pds
-	url = https://github.com/bluesky-social/pds.git
+	url = https://github.com/CommunityStream-io/pds.git

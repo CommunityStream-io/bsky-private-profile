@@ -24,7 +24,6 @@ cursor workspace.code-workspace
 
 ### Getting Started
 
-- 🚀 **[Quick Start Guide](./docs/QUICK_START.md)** - Get running in minutes
 - 📦 **[Installation Guide](./docs/INSTALLATION.md)** - Detailed setup instructions
 - 🔧 **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
 - ✅ **[Setup Status](./docs/SETUP_STATUS.md)** - Current setup status and lessons learned
