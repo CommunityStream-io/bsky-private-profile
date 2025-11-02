@@ -45,26 +45,22 @@ cursor workspace.code-workspace
 
 This opens a multi-root workspace with all components organized for efficient development.
 
-### Install All Dependencies
+### Install All Dependencies (pnpm Workspace)
+
+This project uses **pnpm workspace** to manage all submodules efficiently.
 
 ```bash
-# Terminal 1: Bluesky App
-cd bluesky-app
-yarn install
+# Automated setup (recommended)
+./scripts/install-all.sh
 
-# Terminal 2: ATProto
-cd atproto
-npm install
-npm run build
+# Or manually with pnpm
+pnpm install
+pnpm -r build
+```
 
-# Terminal 3: Community Stream Lexicon
-cd community-stream-lexicon
-npm install
-npm run build
-
-# Terminal 4: Pinata Integration
-cd pinata-integration
-npm install
+**First time?** Run the setup wizard:
+```bash
+pnpm setup
 ```
 
 ### Configure Local Development
@@ -116,16 +112,34 @@ npm run dev
 
 ### Run All Services
 
-After setup, run these in separate terminals:
-
+**Option 1: All services at once (recommended)**
 ```bash
-# Terminal 1: Frontend (http://localhost:19006)
+pnpm dev
+# Or with better output formatting:
+pnpm start:all
+```
+
+**Option 2: Individual services**
+```bash
+# Frontend (http://localhost:19006)
+pnpm dev:app
+
+# PDS (http://localhost:2583)
+pnpm dev:pds
+
+# Pinata Gateway (http://localhost:3000)
+pnpm dev:pinata
+```
+
+**Option 3: Separate terminals (traditional)**
+```bash
+# Terminal 1
 cd bluesky-app && yarn web
 
-# Terminal 2: PDS (http://localhost:2583)
+# Terminal 2
 cd atproto/packages/pds && npm run start:dev
 
-# Terminal 3: Pinata Gateway (http://localhost:3000)
+# Terminal 3
 cd pinata-integration && npm run dev
 ```
 

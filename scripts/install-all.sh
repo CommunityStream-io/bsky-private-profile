@@ -1,50 +1,47 @@
 #!/bin/bash
-# install-all.sh - Install dependencies for all submodules
+# install-all.sh - Install dependencies for all submodules using pnpm workspace
 
 set -e  # Exit on error
 
-echo "🚀 Installing dependencies for all submodules..."
+echo "🚀 Installing dependencies using pnpm workspace..."
 echo ""
 
-# Bluesky App
-echo "📱 Installing Bluesky App dependencies..."
-cd bluesky-app
-yarn install
-cd ..
-echo "✅ Bluesky App dependencies installed"
+# Check if pnpm is installed
+if ! command -v pnpm &> /dev/null; then
+    echo "❌ pnpm not found!"
+    echo ""
+    echo "📦 Installing pnpm globally..."
+    npm install -g pnpm
+    echo "✅ pnpm installed"
+    echo ""
+fi
+
+# Display pnpm version
+echo "📦 pnpm version: $(pnpm --version)"
 echo ""
 
-# ATProto
-echo "🔧 Installing ATProto dependencies..."
-cd atproto
-npm install
-echo "🏗️  Building ATProto packages..."
-npm run build
-cd ..
-echo "✅ ATProto dependencies installed and built"
+# Install all workspace dependencies
+echo "📥 Installing all workspace dependencies..."
+pnpm install
 echo ""
 
-# Community Stream Lexicon
-echo "📋 Installing Community Stream Lexicon dependencies..."
-cd community-stream-lexicon
-npm install
-npm run build
-cd ..
-echo "✅ Community Stream Lexicon dependencies installed and built"
+# Build all packages that need building
+echo "🏗️  Building all packages..."
+pnpm -r build
 echo ""
 
-# Pinata Integration
-echo "🌐 Installing Pinata Integration dependencies..."
-cd pinata-integration
-npm install
-cd ..
-echo "✅ Pinata Integration dependencies installed"
+echo "🎉 All dependencies installed and built successfully!"
 echo ""
-
-echo "🎉 All dependencies installed successfully!"
+echo "Available commands:"
+echo "  pnpm dev              - Run all services in parallel"
+echo "  pnpm dev:app          - Run bluesky app only"
+echo "  pnpm dev:pds          - Run PDS server only"
+echo "  pnpm dev:pinata       - Run Pinata integration only"
+echo "  pnpm start:all        - Run all services with concurrently"
+echo "  pnpm build:all        - Build all packages"
+echo "  pnpm test             - Run all tests"
 echo ""
 echo "Next steps:"
-echo "1. Configure environment variables"
-echo "2. Run: npm run setup:env"
-echo "3. Start services"
-
+echo "1. Configure environment variables (see SETUP_NOTES.md)"
+echo "2. Run: pnpm dev (to start all services)"
+echo "3. Open http://localhost:19006 for app, http://localhost:2583 for PDS"
