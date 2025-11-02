@@ -164,9 +164,11 @@ Based on your local PDS:
 - `user1.test` - No posts
 - `user2.test` - 2 posts (currently logged in)
 - `alice.test` - No posts
+- `alice2.test` - Created during testing
 
 **DIDs:**
 - `user2.test` → `did:plc:m36qafxfncda5qfvyyzu64bh`
+- `alice2.test` → `did:plc:kyocpcpzpxtz4xmn5vqmnq47`
 
 The environment is pre-configured with `user2.test`'s DID since that's your active account.
 

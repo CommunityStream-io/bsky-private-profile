@@ -4,20 +4,22 @@ Common issues and solutions for the Bluesky Private Profile Integration project.
 
 ## Quick Reference - Most Common Issues
 
-| Error                                                           | Quick Fix                                                                 |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| **"Could not locate the bindings file"**                        | You're on Node 24+. Switch to Node 20: `nvm use 20` then reinstall        |
-| **"Must configure either S3 or disk blobstore"**                | Add to `.env`: `PDS_BLOBSTORE_DISK_LOCATION="blobs"`                      |
-| **"Must configure plc rotation key"**                           | Generate keys (see below) and add to `.env`                               |
-| **"Cannot open database because the directory does not exist"** | Create directories: `mkdir -p data blobs`                                 |
-| **"Resource URL must use the https scheme"**                    | Add to `.env`: `PDS_DEV_MODE="true"`                                      |
-| **Visual Studio Build Tools errors**                            | Install "Desktop development with C++" workload OR use `--ignore-scripts` |
-| **Metro watching parent node_modules**                          | Create empty: `mkdir node_modules` in project root                        |
-| **Missing locale/locales/XX/messages**                          | Run: `yarn intl:compile` in bluesky-app                                   |
-| **Windows: mkdir did:plc:xxx (colons in paths)**                | ⚠️ ATProto PDS won't work on Windows. Use Docker PDS instead              |
-| **Docker: Port 2583 already in use**                            | Stop other PDS: `taskkill //PID [PID] //F`                                |
-| **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                 |
-| **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing            |
+| Error                                                           | Quick Fix                                                                      |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **"Could not locate the bindings file"**                        | You're on Node 24+. Switch to Node 20: `nvm use 20` then reinstall             |
+| **"Must configure either S3 or disk blobstore"**                | Add to `.env`: `PDS_BLOBSTORE_DISK_LOCATION="blobs"`                           |
+| **"Must configure plc rotation key"**                           | Generate keys (see below) and add to `.env`                                    |
+| **"Cannot open database because the directory does not exist"** | Create directories: `mkdir -p data blobs`                                      |
+| **"Resource URL must use the https scheme"**                    | Add to `.env`: `PDS_DEV_MODE="true"`                                           |
+| **Visual Studio Build Tools errors**                            | Install "Desktop development with C++" workload OR use `--ignore-scripts`      |
+| **Metro watching parent node_modules**                          | Create empty: `mkdir node_modules` in project root                             |
+| **Missing locale/locales/XX/messages**                          | Run: `yarn intl:compile` in bluesky-app                                        |
+| **Windows: mkdir did:plc:xxx (colons in paths)**                | ⚠️ ATProto PDS won't work on Windows. Use Docker PDS instead                   |
+| **Docker: Port 2583 already in use**                            | Stop other PDS: `taskkill //PID [PID] //F`                                     |
+| **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                      |
+| **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing                 |
+| **"Invalid handle" or "Unable to resolve handle"**              | Ensure `PDS_SERVICE_HANDLE_DOMAINS=".test"` and `PDS_DEV_MODE="true"` are set  |
+| **"Handle TLD is invalid or disallowed"**                       | Use `.test` handles (e.g., `user.test`), NOT `.localhost` - only `.test` works |
 
 **⚠️ Windows Users:** The ATProto monorepo PDS cannot create accounts on Windows due to filesystem limitations (colons in DIDs). Use the [Official Docker PDS](https://github.com/CommunityStream-io/pds) (`official-pds/compose.local.yaml`) instead - it's Linux-based and just works!
 
@@ -1038,6 +1040,189 @@ rm -rf data
 mkdir -p data/data data/blobs
 docker compose -f compose.local.yaml up -d
 ```
+
+### Docker PDS: "Invalid handle" or "Unable to resolve handle"
+
+**Symptoms:**
+
+In the Bluesky UI, handles show as "invalid handle". When trying to resolve a handle via API:
+
+```json
+{
+  "error": "InvalidRequest",
+  "message": "Unable to resolve handle"
+}
+```
+
+Or when trying to resolve:
+
+```bash
+curl "http://localhost:2583/xrpc/com.atproto.identity.resolveHandle?handle=user2.test"
+# Returns: {"error":"InvalidRequest","message":"Unable to resolve handle"}
+```
+
+**Root Cause:**
+
+This typically happens when:
+
+1. `PDS_DEV_MODE` is not set to `"true"`
+2. `PDS_SERVICE_HANDLE_DOMAINS` is not configured
+3. The PDS wasn't restarted after configuration changes
+
+**Solution:**
+
+### Step 1: Verify PDS Configuration
+
+Ensure `compose.local.yaml` has development mode enabled:
+
+```yaml
+environment:
+  PDS_HOSTNAME: localhost
+  PDS_DEV_MODE: "true"
+  PDS_SERVICE_HANDLE_DOMAINS: ".test" # ✅ Correct for local dev
+```
+
+**Important:** `.test` is the standard TLD for local development with AT Protocol.
+
+### Step 2: Restart PDS (Not Just Restart!)
+
+Configuration changes require stopping and starting the container:
+
+```bash
+cd official-pds
+
+# Stop the PDS (restart won't reload env vars)
+docker compose -f compose.local.yaml down
+
+# Start it again with new configuration
+docker compose -f compose.local.yaml up -d
+
+# Verify it's running
+curl http://localhost:2583/xrpc/_health
+# Should return: {"version":"0.4.x"}
+```
+
+**Why restart isn't enough:** `docker compose restart` doesn't reload environment variables. You must use `down` then `up`.
+
+### Step 3: Create Accounts with `.test` Handles
+
+**Option A: Using cURL**
+
+```bash
+curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "user1@test.local",
+    "handle": "user1.test",
+    "password": "password123"
+  }'
+```
+
+**Option B: Using pdsadmin**
+
+```bash
+docker exec -it pds-local /pdsadmin/pdsadmin.sh account create
+# When prompted, use format: user1.test
+```
+
+### Step 4: Test Handle Resolution
+
+```bash
+# Should now work!
+curl "http://localhost:2583/xrpc/com.atproto.identity.resolveHandle?handle=user1.test"
+```
+
+Expected response:
+
+```json
+{
+  "did": "did:plc:xxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+### Step 5: Login in Bluesky UI
+
+1. Open the Bluesky app at `http://localhost:19006`
+2. Login with:
+   - **Handle**: `user1.test`
+   - **Password**: `password123`
+3. Your handle should now display correctly! ✅
+
+### Why `.test` Works in Dev Mode
+
+With `PDS_DEV_MODE="true"` and `PDS_SERVICE_HANDLE_DOMAINS=".test"`:
+
+1. **Account Creation**: The PDS accepts `.test` handles
+2. **Handle Resolution**: In dev mode, the PDS bypasses external DNS/HTTP verification
+3. **Result**: Both creation and resolution work locally without DNS configuration! ✨
+
+### Common TLD Issues
+
+❌ **What DOESN'T Work:**
+
+- `user.localhost` - Rejected with "Handle TLD is invalid or disallowed"
+- `user.local` - Also rejected
+- Any custom TLD without proper dev mode configuration
+
+✅ **What WORKS:**
+
+- `user.test` - Standard for local development
+- Requires `PDS_DEV_MODE="true"` and `PDS_SERVICE_HANDLE_DOMAINS=".test"`
+
+### Alternative: Custom Domain Setup (Advanced)
+
+If you want to test with real domain verification (not recommended for local dev):
+
+**Option 1: Local DNS Server**
+
+- Run a DNS server (like `dnsmasq`)
+- Configure `*.yourdomain.com` → `127.0.0.1`
+- Set up a reverse proxy to handle `/.well-known/atproto-did` requests
+- Update `PDS_HOSTNAME` and `PDS_SERVICE_HANDLE_DOMAINS` accordingly
+
+**Option 2: Hosts File (Limited)**
+
+- Add each handle to `/etc/hosts` (Windows: `C:\Windows\System32\drivers\etc\hosts`)
+- Only works for exact matches, not wildcards
+- Very tedious for multiple accounts
+- Still needs `/.well-known/` endpoint configuration
+
+**For 99% of local development, use `.test` with dev mode enabled.**
+
+### Verification Checklist
+
+- [ ] PDS configuration has `PDS_DEV_MODE="true"`
+- [ ] PDS configuration has `PDS_SERVICE_HANDLE_DOMAINS=".test"`
+- [ ] PDS stopped and started (not just restarted)
+- [ ] Created account(s) with `.test` handles
+- [ ] Handle resolution works via API
+- [ ] Login works in Bluesky UI
+- [ ] No "invalid handle" errors
+- [ ] Profile displays correctly
+
+### Understanding Handle Resolution in Dev Mode
+
+In production, the AT Protocol verifies handles via:
+
+**Method 1: HTTP Well-Known Endpoint**
+
+```
+GET https://{handle}/.well-known/atproto-did
+Response: did:plc:xxxxxxxxxxxxx
+```
+
+**Method 2: DNS TXT Record**
+
+```
+TXT _atproto.{handle} = did:plc:xxxxxxxxxxxxx
+```
+
+In development mode (`PDS_DEV_MODE="true"`):
+
+- ✅ External verification is bypassed
+- ✅ Handles in `PDS_SERVICE_HANDLE_DOMAINS` are automatically trusted
+- ✅ No DNS or web server configuration needed
+- ⚠️ Only use dev mode for local testing, NEVER in production
 
 ## Bluesky App Issues
 
