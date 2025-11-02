@@ -161,16 +161,14 @@ Common AT Protocol collections:
 Based on your local PDS:
 
 **Accounts:**
-- `user1.test` - No posts
-- `user2.test` - 2 posts (currently logged in)
-- `alice.test` - No posts
-- `alice2.test` - Created during testing
+- `stephen.traiforos.com` - Primary test account
+- `catherine.traiforos.com` - Secondary test account
+- `mod-authority.traiforos.com` - Moderation testing
 
 **DIDs:**
-- `user2.test` → `did:plc:m36qafxfncda5qfvyyzu64bh`
-- `alice2.test` → `did:plc:kyocpcpzpxtz4xmn5vqmnq47`
+- `stephen.traiforos.com` → `did:plc:2zuvo5fg2pw5ymjbwzv6zklm`
 
-The environment is pre-configured with `user2.test`'s DID since that's your active account.
+The environment is pre-configured with `stephen.traiforos.com`'s DID since that's your active account.
 
 ## 📖 Documentation
 

@@ -10,21 +10,21 @@ Quick reference for configuring handles in your local PDS setup.
 environment:
   PDS_HOSTNAME: localhost
   PDS_DEV_MODE: "true"
-  PDS_SERVICE_HANDLE_DOMAINS: ".test"  # ✅ Correct!
+  PDS_SERVICE_HANDLE_DOMAINS: ".traiforos.com,.test"  # Multiple domains supported
 ```
 
 ### Example Handles
 
 ✅ **Use these:**
-- `user1.test`
-- `alice.test`
-- `stephen.test`
-- `mod-authority.test`
+- `stephen.traiforos.com`
+- `alice.traiforos.com`
+- `mod-authority.traiforos.com`
+- Or `.test` handles: `user1.test`, `alice.test`
 
 ❌ **DON'T use these:**
 - `user1.localhost` - Rejected: "Handle TLD is invalid or disallowed"
 - `user1.local` - Also rejected
-- Any TLD other than `.test` without special configuration
+- Any TLD not listed in `PDS_SERVICE_HANDLE_DOMAINS`
 
 ## Why `.test` Works
 

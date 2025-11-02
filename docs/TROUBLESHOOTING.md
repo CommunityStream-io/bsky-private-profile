@@ -4,23 +4,25 @@ Common issues and solutions for the Bluesky Private Profile Integration project.
 
 ## Quick Reference - Most Common Issues
 
-| Error                                                           | Quick Fix                                                                      |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **"Could not locate the bindings file"**                        | You're on Node 24+. Switch to Node 20: `nvm use 20` then reinstall             |
-| **"Must configure either S3 or disk blobstore"**                | Add to `.env`: `PDS_BLOBSTORE_DISK_LOCATION="blobs"`                           |
-| **"Must configure plc rotation key"**                           | Generate keys (see below) and add to `.env`                                    |
-| **"Cannot open database because the directory does not exist"** | Create directories: `mkdir -p data blobs`                                      |
-| **"Resource URL must use the https scheme"**                    | Add to `.env`: `PDS_DEV_MODE="true"`                                           |
-| **Visual Studio Build Tools errors**                            | Install "Desktop development with C++" workload OR use `--ignore-scripts`      |
-| **Metro watching parent node_modules**                          | Create empty: `mkdir node_modules` in project root                             |
-| **Missing locale/locales/XX/messages**                          | Run: `yarn intl:compile` in bluesky-app                                        |
-| **Windows: mkdir did:plc:xxx (colons in paths)**                | ⚠️ ATProto PDS won't work on Windows. Use Docker PDS instead                   |
-| **Docker: Port 2583 already in use**                            | Stop other PDS: `taskkill //PID [PID] //F`                                     |
-| **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                      |
-| **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing                 |
-| **"Invalid handle" or "Unable to resolve handle"**              | First: Check if account exists. Then: Ensure `PDS_DEV_MODE="true"` is set      |
-| **"Handle TLD is invalid or disallowed"**                       | Use `.test` handles (e.g., `user.test`), NOT `.localhost` - only `.test` works |
-| **"Handle already taken"**                                      | Account exists! This means handle resolution should work. Try logging in.      |
+| Error                                                           | Quick Fix                                                                                |
+| --------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **"Could not locate the bindings file"**                        | You're on Node 24+. Switch to Node 20: `nvm use 20` then reinstall                       |
+| **"Must configure either S3 or disk blobstore"**                | Add to `.env`: `PDS_BLOBSTORE_DISK_LOCATION="blobs"`                                     |
+| **"Must configure plc rotation key"**                           | Generate keys (see below) and add to `.env`                                              |
+| **"Cannot open database because the directory does not exist"** | Create directories: `mkdir -p data blobs`                                                |
+| **"Resource URL must use the https scheme"**                    | Add to `.env`: `PDS_DEV_MODE="true"`                                                     |
+| **Visual Studio Build Tools errors**                            | Install "Desktop development with C++" workload OR use `--ignore-scripts`                |
+| **Metro watching parent node_modules**                          | Create empty: `mkdir node_modules` in project root                                       |
+| **Missing locale/locales/XX/messages**                          | Run: `yarn intl:compile` in bluesky-app                                                  |
+| **Windows: mkdir did:plc:xxx (colons in paths)**                | ⚠️ ATProto PDS won't work on Windows. Use Docker PDS instead                             |
+| **Docker: Port 2583 already in use**                            | Stop other PDS: `taskkill //PID [PID] //F`                                               |
+| **Docker: Cannot open database**                                | Create dirs: `mkdir -p data/data data/blobs` then restart                                |
+| **Docker: Must configure plc rotation key**                     | Keys should be in `compose.local.yaml` - regenerate if missing                           |
+| **"Invalid handle" or "Unable to resolve handle"**              | First: Check if account exists. Then: Ensure `PDS_DEV_MODE="true"` is set                |
+| **"Handle TLD is invalid or disallowed"**                       | Use `.test` handles (e.g., `user.test`), NOT `.localhost` - only `.test` works           |
+| **"Handle already taken"**                                      | Account exists! This means handle resolution should work. Try logging in.                |
+| **CORS error: `ip.bsky.app/config`**                            | Safe to ignore! App falls back to defaults. See "Bluesky App Warnings" below.            |
+| **"Invalid handle" in UI (but API works)**                      | You're logged into wrong service! Use "Custom" service at login: `http://localhost:2583` |
 
 **⚠️ Windows Users:** The ATProto monorepo PDS cannot create accounts on Windows due to filesystem limitations (colons in DIDs). Use the [Official Docker PDS](https://github.com/CommunityStream-io/pds) (`official-pds/compose.local.yaml`) instead - it's Linux-based and just works!
 
@@ -1190,11 +1192,13 @@ With `PDS_DEV_MODE="true"` and `PDS_SERVICE_HANDLE_DOMAINS=".test"`:
 - `user.localhost` - Rejected with "Handle TLD is invalid or disallowed"
 - `user.local` - Also rejected
 - Any custom TLD without proper dev mode configuration
+- **Why these fail:** Listed in `DISALLOWED_TLDS` in `atproto/packages/syntax/src/handle.ts`
 
 ✅ **What WORKS:**
 
 - `user.test` - Standard for local development
 - Requires `PDS_DEV_MODE="true"` and `PDS_SERVICE_HANDLE_DOMAINS=".test"`
+- **Why `.test` works:** Explicitly allowed in `atproto/packages/syntax/src/handle.ts` for "testing and development"
 
 ### Alternative: Custom Domain Setup (Advanced)
 
@@ -1282,6 +1286,92 @@ In development mode (`PDS_DEV_MODE="true"`):
 
 ## Bluesky App Issues
 
+### "Invalid handle" in UI but API Works / Can't Fetch My Posts
+
+**Symptoms:**
+
+- Handle shows as "invalid handle" in the Bluesky UI
+- Can't fetch your posts in the UI
+- But API calls via Bruno work fine
+- Handle resolution via curl works
+
+**Root Cause:**
+
+You're logged into the **wrong service**! The Bluesky app defaults to `https://bsky.social` (production), but your accounts are on your **local PDS** at `http://localhost:2583`.
+
+When you login to `bsky.social`, it tries to look up `stephen.test` there, can't find it, and shows "invalid handle".
+
+**Solution: Login to Your Local PDS**
+
+#### Step 1: Logout
+
+If currently logged in, logout first.
+
+#### Step 2: Login with Custom Service
+
+1. Click "Sign in"
+2. **Look for "Hosting provider" or "Choose service provider"**
+3. **Select "Custom" or "Other"** (not the default "Bluesky")
+4. **Enter**: `http://localhost:2583`
+5. **Handle**: `stephen.test`
+6. **Password**: `password123`
+7. Click "Sign In"
+
+#### Step 3: Verify
+
+After login:
+
+- Your handle should display correctly ✅
+- Your profile should load
+- You can create posts
+
+**See detailed guide:** [LOGIN_TO_LOCAL_PDS.md](./LOGIN_TO_LOCAL_PDS.md)
+
+#### Alternative: Change Default Service (Development Only)
+
+Edit `bluesky-app/src/lib/constants.ts`:
+
+```typescript
+// Change from:
+export const DEFAULT_SERVICE = BSKY_SERVICE;
+
+// To:
+export const DEFAULT_SERVICE = LOCAL_DEV_SERVICE;
+```
+
+Restart the dev server. Now it defaults to your local PDS.
+
+**⚠️ Don't commit this change!** It's for local development only.
+
+### "I don't see any feeds!" / "Where are my posts?"
+
+**Quick Answer:** Your local posts appear on **your profile**, not in the Discover feed.
+
+**Understanding feeds:**
+
+Your setup uses two services:
+
+- **Local PDS** (`localhost:2583`) - Stores your posts
+- **Public AppView** (`api.bsky.app`) - Generates public feeds
+
+**Where to see content:**
+
+1. **Your posts** → Go to your profile in the UI
+2. **Public Bluesky feeds** → Discover tab (shows public content)
+3. **Create posts** → Use the "+" button or Bruno API
+
+**See the complete guide:** [VIEWING_FEEDS.md](./VIEWING_FEEDS.md)
+
+**Quick test:**
+
+```bash
+# In Bruno:
+1. Run: Account/Create Session (Login)
+2. Run: Posts/Create Test Post
+3. Run: Posts/List Posts  # Verify it worked
+4. Go to your profile in the UI to see it
+```
+
 ### Error: "Can't resolve './locales/XX/messages'"
 
 The Bluesky app shows multiple errors about missing locale message files.
@@ -1344,6 +1434,53 @@ WARNING: requireNativeComponent was not found in 'react-native-web/dist/index'
 ```
 
 **Explanation:** These are iOS/Android-specific native components that aren't available on web. The app handles this gracefully with fallbacks.
+
+### CORS Error: `https://ip.bsky.app/config` (Can Be Ignored)
+
+**Symptoms:**
+
+```
+Access to fetch at 'https://ip.bsky.app/config' from origin 'http://localhost:19006'
+has been blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value
+'https://bsky.app' that is not equal to the supplied origin.
+```
+
+**What This Is:**
+
+The Bluesky app tries to fetch geolocation configuration from `ip.bsky.app` to determine region-specific features (age restrictions, content policies, etc.). This service only allows requests from the production domain (`https://bsky.app`), not from local development (`http://localhost:19006`).
+
+**Why It's Safe to Ignore:**
+
+The app **already handles this gracefully**:
+
+1. It tries to fetch geolocation config
+2. If it fails (CORS error), it catches the error
+3. It falls back to a default configuration (no restrictions)
+4. The app continues working normally
+5. It retries in the background but doesn't block anything
+
+**Your app works fine without geolocation config in development!**
+
+**Optional: Disable the Error Message**
+
+If the console errors bother you, you can disable geolocation fetching:
+
+1. Open `bluesky-app/src/state/geolocation/config.ts`
+2. Find line 63: `// if (__DEV__) {`
+3. Uncomment lines 63-68:
+
+```typescript
+if (__DEV__) {
+  geolocationConfigResolution = new Promise((y) => y({ success: true }));
+  device.set(["deviceGeolocation"], undefined); // clears GPS data
+  device.set(["geolocation"], DEFAULT_GEOLOCATION_CONFIG); // clears bapp-config data
+  return;
+}
+```
+
+This completely bypasses the geolocation service in development mode.
+
+**Note:** This is purely cosmetic - the error doesn't affect functionality either way!
 
 ## Still Having Issues?
 

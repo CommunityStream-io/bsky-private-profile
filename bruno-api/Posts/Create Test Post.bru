@@ -1,0 +1,67 @@
+meta {
+  name: Create Test Post
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.createRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.feed.post",
+    "record": {
+      "$type": "app.bsky.feed.post",
+      "text": "Hello from my local PDS! 🎉 Testing post creation.",
+      "createdAt": "{{now}}"
+    }
+  }
+}
+
+script:pre-request {
+  // Generate current timestamp in ISO 8601 format
+  bru.setVar("now", new Date().toISOString());
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.uri) {
+    console.log("Post created:", response.uri);
+  }
+}
+
+docs {
+  # Create Test Post
+  
+  Creates a simple test post on your local PDS.
+  
+  ## Prerequisites
+  - Must be logged in (run "Create Session" first)
+  - Requires valid {{accessToken}} and {{did}}
+  
+  ## What This Does
+  Creates a post saying "Hello from my local PDS! 🎉 Testing post creation."
+  
+  ## Response
+  Returns:
+  - `uri`: The AT-URI of the created post
+  - `cid`: Content identifier (hash)
+  
+  ## View Your Post
+  After creating, go to:
+  1. Your profile in the Bluesky UI
+  2. Or use "List Posts" to see all your posts
+}
+
