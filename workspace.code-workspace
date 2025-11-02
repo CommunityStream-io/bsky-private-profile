@@ -1,0 +1,61 @@
+{
+  "folders": [
+    {
+      "name": "🎨 Bluesky App (Frontend)",
+      "path": "bluesky-app"
+    },
+    {
+      "name": "🔧 ATProto PDS (Backend)",
+      "path": "atproto/packages/pds"
+    },
+    {
+      "name": "📚 ATProto API (Client)",
+      "path": "atproto/packages/api"
+    },
+    {
+      "name": "📋 Community Stream Lexicon",
+      "path": "community-stream-lexicon"
+    },
+    {
+      "name": "🌐 Pinata Integration",
+      "path": "pinata-integration"
+    },
+    {
+      "name": "📁 Root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "typescript.tsdk": "atproto/node_modules/typescript/lib",
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.git": true,
+      "**/dist": true,
+      "**/build": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/dist": true,
+      "**/build": true,
+      "**/.git": true
+    },
+    "files.watcherExclude": {
+      "**/node_modules/**": true,
+      "**/dist/**": true,
+      "**/build/**": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "ms-vscode.vscode-typescript-next",
+      "bradlc.vscode-tailwindcss"
+    ]
+  }
+}
+

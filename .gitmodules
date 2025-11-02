@@ -1,0 +1,9 @@
+[submodule "bluesky-app"]
+	path = bluesky-app
+	url = https://github.com/bluesky-social/social-app.git
+[submodule "atproto"]
+	path = atproto
+	url = https://github.com/bluesky-social/atproto.git
+[submodule "community-stream-lexicon"]
+	path = community-stream-lexicon
+	url = https://github.com/CommunityStream-io/community-stream-lexicon.git
