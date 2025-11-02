@@ -175,7 +175,43 @@ If you still encounter issues, see **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)*
 
 ## Configure Local Development
 
-### 1. Set Up Local PDS
+You have two options for running a local PDS:
+
+**Option A: Official Docker PDS (Recommended for Development)**  
+Simpler setup using Docker, no native module compilation needed.
+
+**Option B: ATProto Monorepo PDS**  
+Build from source, requires Node 20 and native module compilation.
+
+### Option A: Official Docker PDS (Recommended)
+
+The official PDS uses Docker and is much simpler to set up. See the [official PDS documentation](https://github.com/bluesky-social/pds) for detailed instructions.
+
+**Quick Start:**
+
+```bash
+cd official-pds
+
+# Follow the installer script (Ubuntu/Debian) or manual Docker setup
+# See: https://github.com/bluesky-social/pds#readme
+```
+
+The official PDS includes:
+
+- ✅ Docker Compose setup (no native compilation)
+- ✅ Automatic TLS/HTTPS with Caddy
+- ✅ Built-in admin tools (`pdsadmin`)
+- ✅ Production-ready configuration
+
+### Option B: ATProto Monorepo PDS (Advanced)
+
+Build the PDS from the atproto monorepo source. This requires Node 20 and compiling native modules.
+
+**Requirements:**
+
+- Node 20 LTS
+- Visual Studio Build Tools (Windows) or build-essential (Linux)
+- All atproto packages built
 
 The PDS needs to be built before it can be started. Since it depends on other atproto packages, build all packages:
 

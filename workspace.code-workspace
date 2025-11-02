@@ -21,6 +21,10 @@
       "path": "pinata-integration"
     },
     {
+      "name": "🐳 Official PDS (Docker)",
+      "path": "official-pds"
+    },
+    {
       "name": "📁 Root",
       "path": "."
     }
@@ -77,6 +81,13 @@
         "overrideName": true,
         "color": "terminal.ansiMagenta"
       },
+      "Official PDS": {
+        "path": "C:\\Program Files\\Git\\bin\\bash.exe",
+        "args": ["-c", "cd '${workspaceFolder}/official-pds' && exec bash --login -i"],
+        "icon": "server",
+        "overrideName": true,
+        "color": "terminal.ansiWhite"
+      },
       "Root": {
         "path": "C:\\Program Files\\Git\\bin\\bash.exe",
         "args": ["-c", "cd '${workspaceFolder}' && exec bash --login -i"],
@@ -125,7 +136,7 @@
       {
         "label": "Start PDS",
         "type": "shell",
-        "command": "corepack pnpm --filter @atproto/pds dev",
+        "command": "corepack pnpm --filter @atproto/pds start",
         "options": {
           "cwd": "${workspaceFolder}/atproto"
         },
@@ -148,6 +159,33 @@
           "reveal": "always",
           "panel": "new",
           "group": "services"
+        }
+      },
+      {
+        "label": "Start Official PDS (Docker)",
+        "type": "shell",
+        "command": "docker compose up",
+        "options": {
+          "cwd": "${workspaceFolder}/official-pds"
+        },
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new",
+          "group": "services"
+        }
+      },
+      {
+        "label": "🚀 Start All Services (with Official PDS)",
+        "dependsOn": [
+          "Start Bluesky App",
+          "Start Official PDS (Docker)",
+          "Start Pinata"
+        ],
+        "problemMatcher": [],
+        "presentation": {
+          "reveal": "always",
+          "panel": "new"
         }
       }
     ]
