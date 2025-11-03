@@ -21,30 +21,57 @@ params:query {
 docs {
   # Get Other Privacy Settings
   
-  Checks another user's profile to see if it's private.
+  Checks another user's profile to see if it's private and what data is accessible.
   
   ## Query Parameters
   - `actor` (string): The DID or handle of the target user
   
-  ## Response
-  Returns profile view which may include privacy indicators:
-  - Standard profile fields (did, handle, displayName, etc.)
-  - Check profile metadata to determine if private
+  ## Response Behavior
   
-  **Note:** Privacy checking needs to be implemented via:
-  - Custom profile view logic, or
-  - Checking if follow exists, or
-  - AppView integration for privacy status
+  ### For Public Profiles:
+  Returns full profile view with all standard fields:
+  - `did`, `handle`, `displayName`, `avatar`, `description`, etc.
+  
+  ### For Private Profiles:
+  - **If you're the owner:** Returns full profile data
+  - **If you're an approved follower:** Returns full profile data
+  - **If you're not authorized:** Returns minimal data (only `did` and `handle`)
+  
+  ## Response Examples
+  
+  ### Unauthorized (Private Profile)
+  ```json
+  {
+    "did": "did:plc:abc123",
+    "handle": "alice.test"
+  }
+  ```
+  
+  ### Authorized or Public
+  ```json
+  {
+    "did": "did:plc:abc123",
+    "handle": "alice.test",
+    "displayName": "Alice Smith",
+    "avatar": "https://...",
+    "description": "...",
+    ...
+  }
+  ```
   
   ## Test Scenario
   Part of "Make Profile Private" workflow:
   1. Alice sets her profile to private
   2. Bob (different user) authenticates
   3. Bob checks Alice's profile
-  4. Determine if Bob can view based on approval status
+  4. Receives minimal data (did and handle only)
+  5. Bob sends follow request and gets approved
+  6. Bob checks Alice's profile again
+  7. Receives full profile data
   
   **Environment Variables Required:**
   - `{{targetDid}}`: Set this to the DID of the user whose privacy you want to check
+  - `{{accessToken}}`: Your authentication token
   
-  **TODO:** This may need a custom endpoint to properly expose privacy status to other users.
+  **Implementation Note:** Access control is now implemented via the access control service.
 }

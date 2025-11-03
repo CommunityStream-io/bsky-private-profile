@@ -1,0 +1,73 @@
+meta {
+  name: Check Private Profile Access
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.getProfile?actor={{targetDid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{targetDid}}
+}
+
+docs {
+  # Check Private Profile Access
+  
+  Tests access control for private profiles.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the target user
+  
+  ## Expected Behavior
+  
+  ### If target profile is public:
+  - Returns full profile data (did, handle, displayName, avatar, etc.)
+  
+  ### If target profile is private:
+  - **Owner viewing own profile:** Returns full profile data
+  - **Approved follower:** Returns full profile data
+  - **Non-follower:** Returns minimal profile data (only did and handle)
+  
+  ## Response Structure (Unauthorized)
+  ```json
+  {
+    "did": "did:plc:...",
+    "handle": "alice.test"
+  }
+  ```
+  
+  ## Response Structure (Authorized)
+  ```json
+  {
+    "did": "did:plc:...",
+    "handle": "alice.test",
+    "displayName": "Alice",
+    "avatar": "https://...",
+    "description": "...",
+    ...
+  }
+  ```
+  
+  ## Test Scenario
+  Part of "Access Control" workflow:
+  1. Alice sets her profile to private
+  2. Bob (not following) authenticates
+  3. Bob checks Alice's profile
+  4. Receives minimal profile data
+  5. Bob creates follow request and gets approved
+  6. Bob checks Alice's profile again
+  7. Receives full profile data
+  
+  **Environment Variables Required:**
+  - `{{targetDid}}`: Set to the DID of the private profile to check
+  - `{{accessToken}}`: Authentication token of the requesting user
+}
+

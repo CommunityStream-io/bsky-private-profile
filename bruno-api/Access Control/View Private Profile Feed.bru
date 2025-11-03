@@ -1,0 +1,83 @@
+meta {
+  name: View Private Profile Feed
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.feed.getAuthorFeed?actor={{targetDid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{targetDid}}
+}
+
+docs {
+  # View Private Profile Feed
+  
+  Tests access control for viewing private profile feeds.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the target user
+  - `limit` (integer, optional): Number of posts to return (default: 50)
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Expected Behavior
+  
+  ### If target profile is public:
+  - Returns feed with posts
+  
+  ### If target profile is private:
+  - **Owner viewing own feed:** Returns feed with posts
+  - **Approved follower:** Returns feed with posts
+  - **Non-follower:** Returns 403 Forbidden error
+  
+  ## Success Response (Authorized)
+  ```json
+  {
+    "feed": [
+      {
+        "post": {
+          "uri": "at://...",
+          "cid": "...",
+          "author": {...},
+          "record": {...},
+          "indexedAt": "..."
+        }
+      }
+    ],
+    "cursor": "..."
+  }
+  ```
+  
+  ## Error Response (Unauthorized)
+  ```json
+  {
+    "error": "Forbidden",
+    "message": "Profile is private"
+  }
+  ```
+  Status: 403
+  
+  ## Test Scenario
+  Part of "Access Control" workflow:
+  1. Alice sets her profile to private
+  2. Alice creates some posts
+  3. Bob (not following) authenticates
+  4. Bob tries to view Alice's feed
+  5. Receives 403 Forbidden error
+  6. Bob gets approved as follower
+  7. Bob tries to view Alice's feed again
+  8. Receives feed with posts
+  
+  **Environment Variables Required:**
+  - `{{targetDid}}`: Set to the DID of the private profile
+  - `{{accessToken}}`: Authentication token of the requesting user
+}
+
