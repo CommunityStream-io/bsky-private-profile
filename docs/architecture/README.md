@@ -17,6 +17,7 @@ This project integrates multiple components to extend Bluesky with private profi
 - **[System Overview](overview.md)** - Overall system architecture and component organization
 - **[AT Protocol](at-protocol.md)** - Core AT Protocol concepts and architecture
 - **[Component Interaction](components.md)** - How components communicate and work together
+- **[Access Control](access-control.md)** - Private profile access control architecture and implementation
 
 ## Key Concepts
 
@@ -54,11 +55,13 @@ The AT Protocol uses a distributed architecture where:
 
 The private profile feature extends this architecture with:
 
-1. **Privacy Settings** - Stored in PDS
-2. **Follow Requests** - Managed by PDS
-3. **Access Control** - Enforced by PDS
-4. **Private Media** - Routed through Pinata gateways
-5. **Custom Lexicons** - Define new record types
+1. **Privacy Settings** - Stored in PDS preferences (`app.bsky.actor.defs#privateProfilePref`)
+2. **Follow Requests** - Managed via `app.bsky.graph.followRequest` records
+3. **Access Control** - Enforced by PDS using follow-based authorization
+4. **Private Media** - Routed through Pinata gateways with token-based access
+5. **Custom Lexicons** - Define new record types and extend AT Protocol schemas
+
+**See [Access Control Documentation](access-control.md) for detailed implementation.**
 
 ## Repository Structure
 
@@ -86,6 +89,7 @@ bsky-private-profile/               # Orchestrator repository
 1. Read [System Overview](overview.md) for detailed architecture
 2. Learn [AT Protocol concepts](at-protocol.md) for understanding the foundation
 3. See [Component Interaction](components.md) for implementation details
+4. Review [Access Control](access-control.md) for private profile security architecture
 
 ---
 
