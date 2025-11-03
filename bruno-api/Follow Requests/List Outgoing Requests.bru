@@ -1,0 +1,67 @@
+meta {
+  name: List Outgoing Requests
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.community.graph.listFollowRequests?direction=outgoing&status=pending&limit=50
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  direction: outgoing
+  status: pending
+  limit: 50
+}
+
+docs {
+  # List Outgoing Requests
+  
+  Lists follow requests that you have sent to other users (your requests to follow private profiles).
+  
+  ## Query Parameters
+  - `direction` (string): "outgoing" - requests you sent to others
+  - `status` (string, optional): Filter by status ("pending", "approved", "denied")
+  - `limit` (number, optional): Maximum number of results (default: 50)
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Response
+  Returns a list of your follow requests:
+  ```json
+  {
+    "requests": [
+      {
+        "uri": "at://did:plc:your-did/com.community.graph.followRequest/xxx",
+        "cid": "...",
+        "value": {
+          "subject": "did:plc:alice-did",
+          "status": "pending",
+          "createdAt": "2024-01-01T00:00:00.000Z"
+        },
+        "subject": {
+          "did": "did:plc:alice-did",
+          "handle": "alice.example.com",
+          "displayName": "Alice"
+        }
+      }
+    ],
+    "cursor": "..."
+  }
+  ```
+  
+  ## Test Scenario
+  Used to check status of sent requests:
+  1. Bob authenticates
+  2. Bob sends follow request to Alice (private profile)
+  3. Bob lists outgoing requests
+  4. Verify request to Alice appears with status "pending"
+  5. Bob can track when Alice approves/denies the request
+  
+  **Common Use Case:** Show a list of pending outgoing requests in the UI so the user can track their status.
+}

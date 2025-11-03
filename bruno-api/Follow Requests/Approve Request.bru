@@ -1,0 +1,70 @@
+meta {
+  name: Approve Request
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.community.graph.respondToFollowRequest
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "requestUri": "{{followRequestUri}}",
+    "approved": true
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.followUri) {
+    bru.setVar("followUri", response.followUri);
+  }
+}
+
+docs {
+  # Approve Request
+  
+  Approves a follow request, allowing the requester to follow your private profile.
+  
+  ## Request Body
+  - `requestUri` (string): AT URI of the follow request to approve
+  - `approved` (boolean): true to approve the request
+  
+  ## Response
+  Returns the result of the approval:
+  - `success` (boolean): Whether the operation succeeded
+  - `followUri` (string): AT URI of the created follow record
+  
+  ## What Happens When Approved
+  1. Follow request status is updated to "approved"
+  2. A standard `app.bsky.graph.follow` record is created
+  3. The requester's DID is added to your `allowedFollowers` list
+  4. The requester can now view your private profile and content
+  5. The follow appears in both users' follow lists
+  
+  ## Test Scenario
+  Part of "Follow Request Flow":
+  1. Alice has a private profile
+  2. Bob sends follow request to Alice
+  3. Alice lists incoming requests
+  4. Alice approves Bob's request (using the request URI)
+  5. Verify success response and followUri returned
+  6. Verify Bob can now view Alice's private profile
+  7. Verify Bob appears in Alice's followers list
+  
+  **Environment Variables Required:**
+  - `{{followRequestUri}}`: Set this to the URI from a follow request (saved automatically when creating a request)
+  
+  **Note:** Follow URI is automatically saved to `{{followUri}}` for verification.
+}

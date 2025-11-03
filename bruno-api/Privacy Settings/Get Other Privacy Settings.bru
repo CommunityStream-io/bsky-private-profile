@@ -1,0 +1,51 @@
+meta {
+  name: Get Other Privacy Settings
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.community.actor.getPrivacySettings?actor={{targetDid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{targetDid}}
+}
+
+docs {
+  # Get Other Privacy Settings
+  
+  Retrieves the privacy settings for another user's profile.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the target user
+  
+  ## Response
+  Returns limited privacy settings information:
+  - `isPrivate`: Whether the profile is private
+  - `isOwnProfile`: false (when viewing another user's settings)
+  - `canView`: Whether the authenticated user can view this private profile
+  
+  **Note:** The response is filtered based on access control:
+  - If profile is public, canView is true for everyone
+  - If profile is private and viewer is not in allowedFollowers, canView is false
+  - If profile is private and viewer is in allowedFollowers, canView is true
+  - The allowedFollowers list is NOT exposed to other users
+  
+  ## Test Scenario
+  Part of "Make Profile Private" workflow:
+  1. Alice sets her profile to private
+  2. Bob (different user) authenticates
+  3. Bob checks Alice's privacy settings
+  4. Verify Bob sees isPrivate=true and canView=false
+  5. This indicates Bob needs to send a follow request
+  
+  **Environment Variables Required:**
+  - `{{targetDid}}`: Set this to the DID of the user whose privacy you want to check
+}

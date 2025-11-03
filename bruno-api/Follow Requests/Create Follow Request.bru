@@ -1,0 +1,66 @@
+meta {
+  name: Create Follow Request
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.community.graph.createFollowRequest
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "subject": "{{targetDid}}"
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.uri) {
+    bru.setVar("followRequestUri", response.uri);
+    bru.setVar("followRequestCid", response.cid);
+  }
+}
+
+docs {
+  # Create Follow Request
+  
+  Sends a follow request to a user with a private profile.
+  
+  ## Request Body
+  - `subject` (string): DID of the user to follow
+  
+  ## Response
+  Returns the created follow request record:
+  - `uri`: AT URI of the follow request record
+  - `cid`: Content ID of the record
+  
+  ## Behavior
+  - Only works if the target profile is private
+  - Prevents duplicate requests (one pending request per requester/subject pair)
+  - Creates a record with status "pending"
+  - If profile is public, this should fail (use normal follow instead)
+  
+  ## Test Scenario
+  Part of "Follow Request Flow":
+  1. Alice has a private profile
+  2. Bob authenticates
+  3. Bob sends follow request to Alice
+  4. Verify request created with status "pending"
+  5. Alice can now see Bob's request in her incoming requests
+  
+  **Environment Variables Required:**
+  - `{{targetDid}}`: Set this to the DID of the private profile to follow
+  
+  **Note:** Follow request URI is automatically saved to `{{followRequestUri}}` for use in approval/denial.
+}

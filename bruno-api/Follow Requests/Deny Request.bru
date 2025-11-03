@@ -1,0 +1,67 @@
+meta {
+  name: Deny Request
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.community.graph.respondToFollowRequest
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "requestUri": "{{followRequestUri}}",
+    "approved": false
+  }
+}
+
+docs {
+  # Deny Request
+  
+  Denies a follow request, rejecting the requester's attempt to follow your private profile.
+  
+  ## Request Body
+  - `requestUri` (string): AT URI of the follow request to deny
+  - `approved` (boolean): false to deny the request
+  
+  ## Response
+  Returns the result of the denial:
+  - `success` (boolean): Whether the operation succeeded
+  
+  ## What Happens When Denied
+  1. Follow request status is updated to "denied"
+  2. No follow record is created
+  3. The requester is NOT added to your `allowedFollowers` list
+  4. The requester cannot view your private profile or content
+  5. The requester can see their request was denied in their outgoing requests list
+  
+  ## Test Scenario
+  Part of "Deny Request" workflow:
+  1. Alice has a private profile
+  2. Bob sends follow request to Alice
+  3. Alice lists incoming requests
+  4. Alice denies Bob's request (using the request URI)
+  5. Verify success response
+  6. Verify no follow was created
+  7. Verify Bob is NOT in Alice's allowedFollowers
+  8. Verify Bob cannot view Alice's private profile
+  
+  ## Follow-up Actions
+  After denial, the requester:
+  - Can see the request status is "denied" in their outgoing requests
+  - Cannot send another request immediately (to prevent spam)
+  - Must wait before sending a new request (implementation dependent)
+  
+  **Environment Variables Required:**
+  - `{{followRequestUri}}`: Set this to the URI from a follow request (saved automatically when creating a request)
+}

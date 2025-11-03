@@ -1,0 +1,45 @@
+meta {
+  name: Get Own Privacy Settings
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.community.actor.getPrivacySettings?actor={{did}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{did}}
+}
+
+docs {
+  # Get Own Privacy Settings
+  
+  Retrieves the privacy settings for the authenticated user's own profile.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the user (use own DID for own settings)
+  
+  ## Response
+  Returns privacy settings information:
+  - `isPrivate`: Whether the profile is private
+  - `isOwnProfile`: true (when viewing own settings)
+  - `canView`: true (owner can always view own profile)
+  - `allowedFollowers`: Array of DIDs that are approved followers (if private)
+  
+  ## Test Scenario
+  Used to verify privacy settings after making changes:
+  1. User authenticates
+  2. User sets privacy to private
+  3. User retrieves own privacy settings
+  4. Verify isPrivate is true
+  5. Verify allowedFollowers list is accessible
+  
+  **Note:** When viewing own settings, you always have full access to all privacy information.
+}

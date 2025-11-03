@@ -1,0 +1,56 @@
+meta {
+  name: Set Privacy (Public)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.community.actor.setPrivacySettings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "isPrivate": false
+  }
+}
+
+script:post-response {
+  const response = res.getBody();
+  if (response.uri) {
+    bru.setVar("privacySettingsUri", response.uri);
+    bru.setVar("privacySettingsCid", response.cid);
+  }
+}
+
+docs {
+  # Set Privacy (Public)
+  
+  Sets the user's profile to public mode (default behavior).
+  
+  ## Request Body
+  - `isPrivate` (boolean): Set to false to make profile public
+  
+  ## Response
+  Returns the created/updated privacy settings record:
+  - `uri`: AT URI of the privacy settings record
+  - `cid`: Content ID of the record
+  
+  ## Test Scenario
+  Used to revert a profile back to public:
+  1. User authenticates
+  2. User sets privacy to public
+  3. Verify settings updated
+  4. Profile is now visible to all users
+  
+  **Note:** Privacy settings URI is automatically saved to `{{privacySettingsUri}}` for use in other requests.
+}
