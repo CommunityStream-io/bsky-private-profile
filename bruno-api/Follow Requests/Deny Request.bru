@@ -1,0 +1,80 @@
+meta {
+  name: Deny Request
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.putRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.graph.followRequest",
+    "rkey": "{{followRequestRkey}}",
+    "record": {
+      "$type": "app.bsky.graph.followRequest",
+      "subject": "{{targetDid}}",
+      "status": "denied",
+      "createdAt": "{{$isoTimestamp}}"
+    }
+  }
+}
+
+docs {
+  # Deny Request
+  
+  Updates a follow request record status to "denied".
+  
+  ## Request Body
+  - `repo` (string): Repository DID where the request record exists
+  - `collection` (string): "app.bsky.graph.followRequest"
+  - `rkey` (string): Record key of the follow request
+  - `record` (object):
+    - `$type`: "app.bsky.graph.followRequest"
+    - `subject` (string): Target DID (same as original)
+    - `status` (string): "denied"
+    - `createdAt` (string): ISO 8601 timestamp
+  
+  ## Response
+  Returns the updated record:
+  - `uri`: AT URI of the follow request record
+  - `cid`: Content ID of the updated record
+  
+  ## What Happens When Denied
+  1. Follow request status is updated to "denied"
+  2. No follow record is created
+  3. The requester is NOT added to allowed followers
+  4. The requester cannot view the private profile or content
+  5. The requester can see the status in their outgoing requests
+  
+  ## Test Scenario
+  Part of "Deny Request" workflow:
+  1. Bob creates follow request to Alice
+  2. Alice finds Bob's request (by listing or URI)
+  3. Alice updates the request status to "denied"
+  4. No follow record is created
+  5. Bob is NOT added to Alice's allowed followers
+  6. Bob cannot view Alice's private profile
+  
+  ## Follow-up Actions
+  After denial, the requester:
+  - Can see the request status is "denied" when listing their requests
+  - Request may have cooldown period before resending (implementation dependent)
+  
+  **Environment Variables Required:**
+  - `{{did}}`: DID of the repo owner (Bob's DID if Bob sent the request)
+  - `{{followRequestRkey}}`: Record key from the follow request URI
+  - `{{targetDid}}`: Alice's DID (the subject of the request)
+}

@@ -1,0 +1,53 @@
+meta {
+  name: Set Privacy (Public)
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.putPreferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "preferences": [
+      {
+        "$type": "app.bsky.actor.defs#privateProfilePref",
+        "isPrivate": false
+      }
+    ]
+  }
+}
+
+docs {
+  # Set Privacy (Public)
+  
+  Sets the user's profile to public mode (default behavior).
+  
+  ## Request Body
+  - `preferences` (array): Array of preference objects
+    - `$type`: "app.bsky.actor.defs#privateProfilePref"
+    - `isPrivate` (boolean): Set to false to make profile public
+  
+  ## Response
+  Returns empty response (200 OK) if successful.
+  
+  ## Test Scenario
+  Used to revert a profile back to public:
+  1. User authenticates
+  2. User sets privacy to public using putPreferences
+  3. Verify settings updated with getPreferences
+  4. Profile is now visible to all users
+  
+  **Note:** This uses the standard Bluesky preferences API.
+}

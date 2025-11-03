@@ -1,0 +1,53 @@
+meta {
+  name: Set Privacy (Private)
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.putPreferences
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "preferences": [
+      {
+        "$type": "app.bsky.actor.defs#privateProfilePref",
+        "isPrivate": true
+      }
+    ]
+  }
+}
+
+docs {
+  # Set Privacy (Private)
+  
+  Sets the user's profile to private mode.
+  
+  ## Request Body
+  - `preferences` (array): Array of preference objects
+    - `$type`: "app.bsky.actor.defs#privateProfilePref"
+    - `isPrivate` (boolean): Set to true to make profile private
+  
+  ## Response
+  Returns empty response (200 OK) if successful.
+  
+  ## Test Scenario
+  Part of "Make Profile Private" workflow:
+  1. User authenticates
+  2. User sets privacy to private using putPreferences
+  3. Verify settings updated with getPreferences
+  4. Other users will need to send follow requests
+  
+  **Note:** This uses the standard Bluesky preferences API.
+}

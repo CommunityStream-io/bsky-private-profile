@@ -1,0 +1,79 @@
+meta {
+  name: Approve Request
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.putRecord
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "repo": "{{did}}",
+    "collection": "app.bsky.graph.followRequest",
+    "rkey": "{{followRequestRkey}}",
+    "record": {
+      "$type": "app.bsky.graph.followRequest",
+      "subject": "{{targetDid}}",
+      "status": "approved",
+      "createdAt": "{{$isoTimestamp}}"
+    }
+  }
+}
+
+docs {
+  # Approve Request
+  
+  Updates a follow request record status to "approved".
+  
+  ## Request Body
+  - `repo` (string): Repository DID where the request record exists
+  - `collection` (string): "app.bsky.graph.followRequest"
+  - `rkey` (string): Record key of the follow request
+  - `record` (object):
+    - `$type`: "app.bsky.graph.followRequest"
+    - `subject` (string): Target DID (same as original)
+    - `status` (string): "approved"
+    - `createdAt` (string): ISO 8601 timestamp
+  
+  ## Response
+  Returns the updated record:
+  - `uri`: AT URI of the follow request record
+  - `cid`: Content ID of the updated record
+  
+  ## What Should Happen When Approved
+  1. Follow request status is updated to "approved"
+  2. Application should create a standard `app.bsky.graph.follow` record
+  3. The requester should be added to approved followers list
+  4. The requester can then view the private profile and content
+  
+  **Note:** The actual follow creation and allowedFollowers management needs to be
+  implemented separately, either:
+  - In application logic after approval
+  - Via PDS triggers/hooks
+  - Via AppView indexing
+  
+  ## Test Scenario
+  Part of "Follow Request Flow":
+  1. Bob creates follow request to Alice
+  2. Alice finds Bob's request (by listing or URI)
+  3. Alice updates the request status to "approved"
+  4. Application creates follow record for Bob
+  5. Bob is added to Alice's allowed followers
+  
+  **Environment Variables Required:**
+  - `{{did}}`: DID of the repo owner (Bob's DID if Bob sent the request)
+  - `{{followRequestRkey}}`: Record key from the follow request URI
+  - `{{targetDid}}`: Alice's DID (the subject of the request)
+}

@@ -1,0 +1,41 @@
+meta {
+  name: Get Own Privacy Settings
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.getPreferences
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+docs {
+  # Get Own Privacy Settings
+  
+  Retrieves all preferences for the authenticated user, including privacy settings.
+  
+  ## Query Parameters
+  None - retrieves preferences for the authenticated user.
+  
+  ## Response
+  Returns preferences array containing:
+  - `preferences`: Array of all user preferences
+    - Look for `app.bsky.actor.defs#privateProfilePref` object:
+      - `$type`: "app.bsky.actor.defs#privateProfilePref"
+      - `isPrivate`: Whether the profile is private
+  
+  ## Test Scenario
+  Used to verify privacy settings after making changes:
+  1. User authenticates
+  2. User sets privacy to private
+  3. User retrieves preferences
+  4. Find the privateProfilePref object in the preferences array
+  5. Verify isPrivate is true
+  
+  **Note:** This returns all user preferences, not just privacy settings.
+}

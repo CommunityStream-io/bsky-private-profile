@@ -1,0 +1,65 @@
+meta {
+  name: List Outgoing Requests
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.listRecords?repo={{did}}&collection=app.bsky.graph.followRequest&limit=50
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  repo: {{did}}
+  collection: app.bsky.graph.followRequest
+  limit: 50
+}
+
+docs {
+  # List Outgoing Requests
+  
+  Lists follow request records you have created (outgoing requests).
+  
+  ## Query Parameters
+  - `repo` (string): Your DID
+  - `collection` (string): "app.bsky.graph.followRequest"
+  - `limit` (number, optional): Maximum number of results (default: 50)
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Response
+  Returns a list of your follow request records:
+  ```json
+  {
+    "records": [
+      {
+        "uri": "at://did:plc:your-did/app.bsky.graph.followRequest/xxx",
+        "cid": "...",
+        "value": {
+          "$type": "app.bsky.graph.followRequest",
+          "subject": "did:plc:alice-did",
+          "status": "pending",
+          "createdAt": "2024-01-01T00:00:00.000Z"
+        }
+      }
+    ],
+    "cursor": "..."
+  }
+  ```
+  
+  **Note:** You can filter the results by status in your application code.
+  
+  ## Test Scenario
+  Used to check status of sent requests:
+  1. Bob authenticates
+  2. Bob creates follow request to Alice (private profile)
+  3. Bob lists his follow request records
+  4. Verify request to Alice appears with status "pending"
+  5. Bob can check later to see if status changed to "approved" or "denied"
+  
+  **Common Use Case:** Show a list of pending outgoing requests in the UI so the user can track their status.
+}

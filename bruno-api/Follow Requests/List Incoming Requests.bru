@@ -1,0 +1,69 @@
+meta {
+  name: List Incoming Requests
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/xrpc/com.atproto.repo.listRecords?repo={{did}}&collection=app.bsky.graph.followRequest&limit=50
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  repo: {{did}}
+  collection: app.bsky.graph.followRequest
+  limit: 50
+}
+
+docs {
+  # List Incoming Requests
+  
+  Lists follow request records where YOU are the subject (incoming requests).
+  
+  ## Query Parameters
+  - `repo` (string): Your DID (to list records from your repo)
+  - `collection` (string): "app.bsky.graph.followRequest"
+  - `limit` (number, optional): Maximum number of results (default: 50)
+  - `cursor` (string, optional): Pagination cursor
+  
+  ## Response
+  Returns a list of records:
+  ```json
+  {
+    "records": [
+      {
+        "uri": "at://did:plc:requester/app.bsky.graph.followRequest/xxx",
+        "cid": "...",
+        "value": {
+          "$type": "app.bsky.graph.followRequest",
+          "subject": "did:plc:your-did",
+          "status": "pending",
+          "createdAt": "2024-01-01T00:00:00.000Z"
+        }
+      }
+    ],
+    "cursor": "..."
+  }
+  ```
+  
+  **Note:** To find incoming requests (where you are the subject), you need to:
+  1. Query the backlink index, OR
+  2. Implement a custom query endpoint, OR
+  3. List all follow requests and filter by subject=your-did
+  
+  This endpoint currently lists requests FROM you. For a proper implementation,
+  you'll need additional AppView support or custom PDS endpoints to query by subject.
+  
+  ## Test Scenario
+  Part of "Follow Request Flow":
+  1. Bob creates follow request to Alice
+  2. Alice needs to query for records where subject=Alice's DID
+  3. This requires backlink queries or custom endpoints
+  
+  **TODO:** Implement proper incoming request query using backlinks or custom endpoint.
+}

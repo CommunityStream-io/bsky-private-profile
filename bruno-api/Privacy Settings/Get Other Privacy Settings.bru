@@ -1,0 +1,50 @@
+meta {
+  name: Get Other Privacy Settings
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/xrpc/app.bsky.actor.getProfile?actor={{targetDid}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{accessToken}}
+}
+
+params:query {
+  actor: {{targetDid}}
+}
+
+docs {
+  # Get Other Privacy Settings
+  
+  Checks another user's profile to see if it's private.
+  
+  ## Query Parameters
+  - `actor` (string): The DID or handle of the target user
+  
+  ## Response
+  Returns profile view which may include privacy indicators:
+  - Standard profile fields (did, handle, displayName, etc.)
+  - Check profile metadata to determine if private
+  
+  **Note:** Privacy checking needs to be implemented via:
+  - Custom profile view logic, or
+  - Checking if follow exists, or
+  - AppView integration for privacy status
+  
+  ## Test Scenario
+  Part of "Make Profile Private" workflow:
+  1. Alice sets her profile to private
+  2. Bob (different user) authenticates
+  3. Bob checks Alice's profile
+  4. Determine if Bob can view based on approval status
+  
+  **Environment Variables Required:**
+  - `{{targetDid}}`: Set this to the DID of the user whose privacy you want to check
+  
+  **TODO:** This may need a custom endpoint to properly expose privacy status to other users.
+}
