@@ -4,9 +4,6 @@
 [submodule "atproto"]
 	path = atproto
 	url = https://github.com/CommunityStream-io/atproto.git
-[submodule "community-stream-lexicon"]
-	path = community-stream-lexicon
-	url = https://github.com/CommunityStream-io/community-stream-lexicon.git
 [submodule "pinata-integration"]
 	path = pinata-integration
 	url = https://github.com/CommunityStream-io/pinata-integration.git

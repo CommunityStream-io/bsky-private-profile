@@ -1,0 +1,45 @@
+{
+  "lexicon": 1,
+  "id": "com.community.graph.respondToFollowRequest",
+  "defs": {
+    "main": {
+      "type": "procedure",
+      "description": "Approve or deny a follow request",
+      "input": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["requestUri", "approved"],
+          "properties": {
+            "requestUri": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "AT URI of the follow request"
+            },
+            "approved": {
+              "type": "boolean",
+              "description": "Whether to approve or deny"
+            }
+          }
+        }
+      },
+      "output": {
+        "encoding": "application/json",
+        "schema": {
+          "type": "object",
+          "required": ["success"],
+          "properties": {
+            "success": {
+              "type": "boolean"
+            },
+            "followUri": {
+              "type": "string",
+              "format": "at-uri",
+              "description": "URI of created follow record (if approved)"
+            }
+          }
+        }
+      }
+    }
+  }
+}

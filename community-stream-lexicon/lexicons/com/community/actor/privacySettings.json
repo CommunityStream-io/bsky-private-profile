@@ -1,0 +1,37 @@
+{
+  "lexicon": 1,
+  "id": "com.community.actor.privacySettings",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Privacy settings for a user profile",
+      "key": "self",
+      "record": {
+        "type": "object",
+        "required": ["isPrivate"],
+        "properties": {
+          "isPrivate": {
+            "type": "boolean",
+            "description": "Whether the profile is private"
+          },
+          "allowedFollowers": {
+            "type": "array",
+            "description": "DIDs of approved followers",
+            "items": {
+              "type": "string",
+              "format": "did"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

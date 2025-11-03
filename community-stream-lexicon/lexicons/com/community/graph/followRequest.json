@@ -1,0 +1,35 @@
+{
+  "lexicon": 1,
+  "id": "com.community.graph.followRequest",
+  "defs": {
+    "main": {
+      "type": "record",
+      "description": "Request to follow a private profile",
+      "key": "tid",
+      "record": {
+        "type": "object",
+        "required": ["subject", "status", "createdAt"],
+        "properties": {
+          "subject": {
+            "type": "string",
+            "format": "did",
+            "description": "DID of the profile to follow"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "approved", "denied"],
+            "description": "Current status of the request"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime"
+          },
+          "respondedAt": {
+            "type": "string",
+            "format": "datetime"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Generated source files (regenerated on build)
+src/index.ts
+src/lexicons.ts
+src/util.ts
+src/types/
+
+# Generated lexicon JS files (should be in src/ not lexicons/)
+lexicons/*.js
+lexicons/*.d.ts
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
