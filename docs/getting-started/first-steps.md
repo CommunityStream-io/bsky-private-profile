@@ -52,7 +52,17 @@ Open http://localhost:19006 in your browser. You should see the Bluesky app logi
 
 5. **Create account** and you're in!
 
-### Option B: Via API
+### Option D: Via Bruno (Easiest for Multiple Accounts)
+
+Create multiple test accounts quickly using Bruno:
+
+1. Open `Account/Create Account.bru`
+2. Change the handle/email for each account
+3. Click "Send" for each account
+
+Much faster than curl for creating multiple accounts!
+
+### Option E: Via curl
 
 ```bash
 curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
@@ -80,7 +90,20 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
 
 ## Create Additional Test Accounts
 
-Create multiple accounts to test social features:
+Create multiple accounts to test social features like following, privacy settings, and follow requests.
+
+### Via Bruno (Fastest)
+
+1. Open `Account/Create Account.bru` in Bruno
+2. Update handle/email for each account:
+   - `bob.test` / `bob@test.local`
+   - `carol.test` / `carol@test.local`
+   - `david.test` / `david@test.local`
+3. Click "Send" for each
+
+**Tip:** Bruno remembers your request history, making it easy to create multiple accounts.
+
+### Via curl
 
 ```bash
 # Create Bob
@@ -104,6 +127,15 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
 
 ## Login to Existing Account
 
+### Via Bruno (Recommended)
+
+1. Open `Account/Create Session (Login).bru`
+2. Update the body with your handle and password
+3. Click "Send"
+4. Your tokens are automatically saved to environment variables! ✅
+
+All subsequent requests will use these tokens automatically.
+
 ### Via App
 
 1. Open http://localhost:19006
@@ -112,7 +144,7 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createAccount \
 4. Select "Custom" server: `http://localhost:2583`
 5. Click "Sign in"
 
-### Via API
+### Via curl
 
 ```bash
 curl -X POST http://localhost:2583/xrpc/com.atproto.server.createSession \
@@ -137,7 +169,17 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.server.createSession \
 
 ## Create Your First Post
 
-### Via API
+### Via Bruno (Recommended)
+
+1. **Login first** (see above) - tokens will be saved automatically
+2. Open `Posts/Create Test Post.bru`
+3. Modify the post text if desired
+4. Click "Send"
+5. Post created! ✅
+
+The post URI and CID are returned in the response.
+
+### Via curl
 
 ```bash
 # Replace with your actual accessJwt and DID
@@ -167,7 +209,13 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.repo.createRecord \
 
 ## Verify Your Post
 
-### Via API
+### Via Bruno
+
+1. Open `Posts/List Posts.bru`
+2. Click "Send"
+3. See all your posts in the response!
+
+### Via curl
 
 ```bash
 # List your posts
@@ -220,23 +268,79 @@ curl -X POST http://localhost:2583/xrpc/com.atproto.repo.createRecord \
   }"
 ```
 
-## Use Bruno API Collection
+## Using Bruno API Collection
 
-The project includes a Bruno API collection for easier testing:
+The project includes a **complete Bruno API collection** for testing all PDS features without needing the UI.
 
-```bash
-cd bruno-api
-```
+### Why Use Bruno?
 
-Open Bruno and load this collection. It includes pre-configured requests for:
+- ✅ **Pre-configured requests** - No need to write curl commands
+- ✅ **Auto-saved tokens** - Login once, use everywhere
+- ✅ **Environment variables** - Easy to switch between accounts
+- ✅ **Request history** - See all your previous requests
+- ✅ **Code generation** - Export to curl, JavaScript, Python, etc.
+- ✅ **Faster iteration** - Test APIs quickly during development
 
-- Account creation
-- Authentication
-- Creating posts
-- Following users
-- Profile queries
+### Getting Started with Bruno
 
-See [Bruno API documentation](../../bruno-api/README.md) for details.
+**Option 1: Bruno Desktop App**
+1. Download from [usebruno.com](https://www.usebruno.com/)
+2. File → Open Collection → Select `bruno-api/`
+3. Select "local" environment in top-right dropdown
+
+**Option 2: VS Code Extension**
+1. Install "Bruno" extension in VS Code
+2. Open `bruno-api/` folder in VS Code
+3. Click on `.bru` files to view and execute requests
+
+### Available Requests
+
+**Account Management:**
+- `Account/Create Account.bru` - Create new accounts
+- `Account/Create Session (Login).bru` - Login and save tokens
+- `Account/Get Session.bru` - Verify current session
+- `Account/Delete Session (Logout).bru` - Logout
+
+**Posts:**
+- `Posts/Create Test Post.bru` - Create posts
+- `Posts/List Posts.bru` - List your posts
+- `Posts/Get Post.bru` - Get specific post
+- `Posts/Delete Post.bru` - Delete posts
+
+**Profile:**
+- `Profile/Get Profile.bru` - Get profile info
+- `Profile/Update Profile.bru` - Update profile
+
+**Identity & Repository:**
+- `Identity/Resolve Handle.bru` - Test handle resolution
+- `Repository/Describe Repo.bru` - Get repo info
+- `Repository/List Records.bru` - List all records
+
+**Health:**
+- `Health/Check Health.bru` - Verify PDS is running
+
+### Quick Workflow with Bruno
+
+**Complete testing workflow in 4 steps:**
+
+1. **Create account** → `Account/Create Account.bru`
+2. **Login** → `Account/Create Session (Login).bru` (tokens auto-saved ✅)
+3. **Create post** → `Posts/Create Test Post.bru` (uses saved tokens)
+4. **List posts** → `Posts/List Posts.bru` (uses saved tokens)
+
+That's it! No copying tokens or managing authentication manually.
+
+### Environment Variables in Bruno
+
+The `local` environment is pre-configured with:
+- `baseUrl`: `http://localhost:2583`
+- `accessToken`: Auto-saved on login
+- `refreshToken`: Auto-saved on login
+- `did`: Auto-saved on login
+
+When you login via `Create Session`, Bruno automatically extracts and saves these values for use in all other requests.
+
+See [Bruno API Collection Documentation](../../bruno-api/README.md) for complete details.
 
 ## Common Issues
 
