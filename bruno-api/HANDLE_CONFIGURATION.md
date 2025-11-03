@@ -143,7 +143,8 @@ Then set up DNS or HTTP verification for handle resolution.
 
 ## References
 
-- [TROUBLESHOOTING.md](../docs/TROUBLESHOOTING.md) - Detailed troubleshooting guide
+- [Troubleshooting Guide](../docs/reference/troubleshooting.md) - Detailed troubleshooting guide
+- [Handle Configuration Guide](../docs/guides/handle-configuration.md) - Complete handle setup guide
 - [AT Protocol Docs](https://atproto.com) - Official protocol documentation
 - [PDS Configuration](https://github.com/bluesky-social/pds) - Official PDS repository
 

@@ -172,8 +172,8 @@ docker compose -f compose.local.yaml up -d
 ## References
 
 - [HANDLE_CONFIGURATION.md](./HANDLE_CONFIGURATION.md) - Handle setup guide
-- [TROUBLESHOOTING.md](../docs/TROUBLESHOOTING.md) - Common issues
-- [WHY_TEST_NOT_LOCALHOST.md](../docs/WHY_TEST_NOT_LOCALHOST.md) - TLD restrictions explained
+- [Troubleshooting Guide](../docs/reference/troubleshooting.md) - Common issues
+- [Handle Configuration Guide](../docs/guides/handle-configuration.md) - Complete handle setup and TLD restrictions
 
 ---
 
