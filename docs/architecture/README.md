@@ -32,23 +32,18 @@ The AT Protocol uses a distributed architecture where:
 
 ### Component Roles
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                  AT Protocol Stack                       │
-├─────────────────────────────────────────────────────────┤
-│                                                          │
-│  ┌──────────┐      ┌──────────┐      ┌─────────────┐   │
-│  │  Client  │ ───▶ │ AppView  │ ───▶ │     PDS     │   │
-│  │   (UI)   │ ◀─── │ Service  │ ◀─── │ (Your Data) │   │
-│  └──────────┘      └──────────┘      └─────────────┘   │
-│                          │                               │
-│                          ▼                               │
-│                    ┌──────────┐                          │
-│                    │   PLC    │  (DID Registry)          │
-│                    │ Directory│                          │
-│                    └──────────┘                          │
-│                                                          │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph AT Protocol Stack
+        Client["Client<br/>(UI)"]
+        AppView["AppView<br/>Service"]
+        PDS["PDS<br/>(Your Data)"]
+        PLC["PLC Directory<br/>(DID Registry)"]
+
+        Client <--> AppView
+        AppView <--> PDS
+        AppView --> PLC
+    end
 ```
 
 ### Private Profile Extension
