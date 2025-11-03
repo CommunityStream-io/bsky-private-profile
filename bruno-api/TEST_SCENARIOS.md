@@ -18,7 +18,7 @@ Create three test accounts for comprehensive testing:
 |---------|------|---------|
 | Alice | Private profile owner | Has a private profile, receives follow requests |
 | Bob | Approved follower | Sends request, gets approved by Alice |
-| Charlie | Denied follower | Sends request, gets denied by Alice |
+| Charlie | Rejected requester | Sends request, gets denied by Alice |
 
 ### Creating Test Accounts
 
