@@ -17,28 +17,36 @@ cd bsky-private-profile
 cursor workspace.code-workspace
 ```
 
-📖 **New to the project?** Start with the [Quick Start Guide](./docs/QUICK_START.md)  
-📚 **Need detailed setup?** See the [Installation Guide](./docs/INSTALLATION.md)
+📖 **New to the project?** Start with the [Quick Start Guide](./QUICKSTART.md)  
+📚 **Complete documentation:** Browse the [Documentation Hub](./docs/README.md)
 
 ## Documentation
 
-### Getting Started
+### 🚀 Getting Started
 
-- 📦 **[Installation Guide](./docs/INSTALLATION.md)** - Detailed setup instructions
-- 🔧 **[Troubleshooting](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
-- ✅ **[Setup Status](./docs/SETUP_STATUS.md)** - Current setup status and lessons learned
+- [Quick Start](./QUICKSTART.md) - Fast setup path
+- [Prerequisites](./docs/getting-started/prerequisites.md) - Required tools and dependencies
+- [First Steps](./docs/getting-started/first-steps.md) - Create accounts and verify
 
-### Development
+### 📦 Components
 
-- 🏗️ **[Architecture](./docs/ARCHITECTURE.md)** - System architecture and components
-- 💻 **[Development Guide](./docs/DEVELOPMENT.md)** - Running services and development workflow
-- 🧪 **[Testing Guide](./docs/TESTING.md)** - Running tests
+- [PDS Documentation](./docs/pds/README.md) - Personal Data Server setup and configuration
+- [AppView Documentation](./docs/appview/README.md) - AppView service (optional)
+- [Bluesky App Documentation](./docs/bluesky-app/README.md) - Frontend setup and development
+- [Pinata Integration](./docs/pinata/README.md) - IPFS private gateway service
 
-### Project Info
+### 📚 Guides & Reference
 
-- 🤝 **[Contributing](./docs/CONTRIBUTING.md)** - How to contribute to the project
-- 📋 **[Implementation Phases](./docs/PHASES.md)** - Current phase and roadmap
-- 🔒 **[Security](./docs/SECURITY.md)** - Security considerations
+- [Handle Configuration](./docs/guides/handle-configuration.md) - DNS and handle setup
+- [Troubleshooting](./docs/reference/troubleshooting.md) - Common issues and solutions
+- [Architecture Overview](./docs/architecture/overview.md) - System architecture
+- [Environment Variables](./docs/reference/environment-variables.md) - Complete variable reference
+
+### 🤝 Contributing
+
+- [Contributing Guide](./docs/reference/contributing.md) - How to contribute
+- [Implementation Phases](./docs/reference/phases.md) - Project roadmap
+- [Security](./docs/reference/security.md) - Security considerations
 
 ## Project Structure
 
@@ -84,9 +92,10 @@ code bruno-api/
 ```
 
 **Quick Start:**
+
 1. Open the `bruno-api/` collection
 2. Select "local" environment
-3. Run `Account/Create Session (Login)` 
+3. Run `Account/Create Session (Login)`
 4. Test other endpoints (tokens are auto-saved!)
 
 See [bruno-api/README.md](./bruno-api/README.md) for full documentation.

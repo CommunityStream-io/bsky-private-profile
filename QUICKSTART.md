@@ -48,6 +48,7 @@ make run-dev-env-logged
 ```
 
 **Expected output:**
+
 ```
 🔍 Dev-env introspection server http://localhost:2581
 👤 DID Placeholder server http://localhost:2582
@@ -73,18 +74,21 @@ This should return something like: `"did:web:localhost:2584"`
 Choose your platform:
 
 #### Web (Easiest)
+
 ```bash
 cd C:/Users/trifo/bsky-private-profile/bluesky-app
 yarn web
 ```
 
 #### iOS
+
 ```bash
 cd C:/Users/trifo/bsky-private-profile/bluesky-app
 yarn ios
 ```
 
 #### Android
+
 ```bash
 cd C:/Users/trifo/bsky-private-profile/bluesky-app
 
@@ -102,21 +106,25 @@ Your Bluesky app is **already configured** to use the local dev environment when
 ### Files Already Set Up:
 
 1. **`bluesky-app/src/lib/constants.ts` (lines 7-8)**:
+
    ```typescript
    export const LOCAL_DEV_SERVICE =
-     Platform.OS === 'android' ? 'http://10.0.2.2:2583' : 'http://localhost:2583'
+     Platform.OS === "android"
+       ? "http://10.0.2.2:2583"
+       : "http://localhost:2583";
    ```
 
 2. **`bluesky-app/src/lib/constants.ts` (line 215)**:
+
    ```typescript
-   export const DEV_ENV_APPVIEW = `http://localhost:2584`
+   export const DEV_ENV_APPVIEW = `http://localhost:2584`;
    ```
 
 3. **`bluesky-app/src/state/ageAssurance/useInitAgeAssurance.ts` (lines 26-33)**:
    ```typescript
    if (__DEV__) {
-     APPVIEW = DEV_ENV_APPVIEW
-     APPVIEW_DID = `did:web:localhost:2584`
+     APPVIEW = DEV_ENV_APPVIEW;
+     APPVIEW_DID = `did:web:localhost:2584`;
    }
    ```
 
@@ -128,12 +136,14 @@ If the DID from step 2 is different than `did:web:localhost:2584`, update line 3
 ## 🧪 Testing the Setup
 
 1. **Check services are running:**
+
    ```bash
    curl http://localhost:2583  # PDS should respond
    curl http://localhost:2584  # AppView should respond
    ```
 
 2. **Create an account** or sign in using the Bluesky app
+
    - When prompted for server, use `http://localhost:2583`
    - Or let it default if you're in dev mode
 
@@ -148,6 +158,7 @@ If the DID from step 2 is different than `did:web:localhost:2584`, update line 3
 ## 🐛 Common Issues & Solutions
 
 ### Port Already in Use
+
 ```bash
 # Find and kill process using the port
 netstat -ano | findstr :2583
@@ -155,6 +166,7 @@ taskkill /PID <PID> /F
 ```
 
 ### Docker Not Running
+
 ```bash
 # Check Docker status
 docker ps
@@ -166,6 +178,7 @@ docker volume prune
 ```
 
 ### Build Errors in atproto
+
 ```bash
 cd C:/Users/trifo/bsky-private-profile/atproto
 rm -rf node_modules
@@ -175,6 +188,7 @@ make build
 ```
 
 ### Android Emulator Can't Access Localhost
+
 ```bash
 # Reverse ports for Android
 adb reverse tcp:2583 tcp:2583
@@ -182,19 +196,20 @@ adb reverse tcp:2584 tcp:2584
 ```
 
 ### App Not Connecting to Local Backend
+
 1. Verify `__DEV__` is true in your app
 2. Check the app console logs for connection attempts
 3. Verify all services are running: `curl http://localhost:2583`
 
 ## 📚 Service URLs Reference
 
-| Service | URL | Purpose |
-|---------|-----|---------|
-| **PDS** | http://localhost:2583 | Personal Data Server - user accounts & data |
-| **AppView** | http://localhost:2584 | Bluesky app backend - feeds, age assurance, etc |
-| **PLC** | http://localhost:2582 | DID Placeholder server |
-| **Introspect** | http://localhost:2581 | Development introspection |
-| **Ozone** | http://localhost:2587 | Moderation service |
+| Service        | URL                   | Purpose                                         |
+| -------------- | --------------------- | ----------------------------------------------- |
+| **PDS**        | http://localhost:2583 | Personal Data Server - user accounts & data     |
+| **AppView**    | http://localhost:2584 | Bluesky app backend - feeds, age assurance, etc |
+| **PLC**        | http://localhost:2582 | DID Placeholder server                          |
+| **Introspect** | http://localhost:2581 | Development introspection                       |
+| **Ozone**      | http://localhost:2587 | Moderation service                              |
 
 ## 🎯 Next Steps
 
@@ -208,12 +223,28 @@ Now that you have the local dev environment running:
 
 ## 📖 Full Documentation
 
-- [Detailed Setup Guide](./LOCAL_DEV_SETUP.md)
-- [AT Protocol Docs](https://atproto.com)
-- [Bluesky App Build Instructions](./bluesky-app/docs/build.md)
+### Detailed Guides
+
+For more comprehensive information, see the organized documentation:
+
+- **[Documentation Hub](./docs/README.md)** - Navigate all documentation
+- **[Getting Started](./docs/getting-started/quickstart.md)** - Comprehensive setup guide
+- **[PDS Setup](./docs/pds/README.md)** - Choose and configure your PDS
+- **[Troubleshooting](./docs/reference/troubleshooting.md)** - Fix common issues
+- **[Handle Configuration](./docs/guides/handle-configuration.md)** - DNS and handle setup
+
+### Component Documentation
+
+- **[PDS](./docs/pds/README.md)** - Personal Data Server documentation
+- **[AppView](./docs/appview/README.md)** - AppView service (optional)
+- **[Bluesky App](./docs/bluesky-app/README.md)** - Frontend development
+- **[Architecture](./docs/architecture/overview.md)** - System architecture
+
+### External Resources
+
+- [AT Protocol Docs](https://atproto.com) - Official AT Protocol documentation
+- [Bluesky Developer Docs](https://docs.bsky.app) - Bluesky development resources
 
 ---
 
 **Happy coding!** 🎉
-
-
