@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/xrpc/com.community.actor.getPrivacySettings?actor={{targetDid}}
+  url: {{baseUrl}}/xrpc/app.bsky.actor.getProfile?actor={{targetDid}}
   body: none
   auth: bearer
 }
@@ -21,31 +21,30 @@ params:query {
 docs {
   # Get Other Privacy Settings
   
-  Retrieves the privacy settings for another user's profile.
+  Checks another user's profile to see if it's private.
   
   ## Query Parameters
   - `actor` (string): The DID or handle of the target user
   
   ## Response
-  Returns limited privacy settings information:
-  - `isPrivate`: Whether the profile is private
-  - `isOwnProfile`: false (when viewing another user's settings)
-  - `canView`: Whether the authenticated user can view this private profile
+  Returns profile view which may include privacy indicators:
+  - Standard profile fields (did, handle, displayName, etc.)
+  - Check profile metadata to determine if private
   
-  **Note:** The response is filtered based on access control:
-  - If profile is public, canView is true for everyone
-  - If profile is private and viewer is not in allowedFollowers, canView is false
-  - If profile is private and viewer is in allowedFollowers, canView is true
-  - The allowedFollowers list is NOT exposed to other users
+  **Note:** Privacy checking needs to be implemented via:
+  - Custom profile view logic, or
+  - Checking if follow exists, or
+  - AppView integration for privacy status
   
   ## Test Scenario
   Part of "Make Profile Private" workflow:
   1. Alice sets her profile to private
   2. Bob (different user) authenticates
-  3. Bob checks Alice's privacy settings
-  4. Verify Bob sees isPrivate=true and canView=false
-  5. This indicates Bob needs to send a follow request
+  3. Bob checks Alice's profile
+  4. Determine if Bob can view based on approval status
   
   **Environment Variables Required:**
   - `{{targetDid}}`: Set this to the DID of the user whose privacy you want to check
+  
+  **TODO:** This may need a custom endpoint to properly expose privacy status to other users.
 }

@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/xrpc/com.community.actor.setPrivacySettings
+  url: {{baseUrl}}/xrpc/app.bsky.actor.putPreferences
   body: json
   auth: bearer
 }
@@ -20,15 +20,12 @@ headers {
 
 body:json {
   {
-    "isPrivate": false
-  }
-}
-
-script:post-response {
-  const response = res.getBody();
-  if (response.uri) {
-    bru.setVar("privacySettingsUri", response.uri);
-    bru.setVar("privacySettingsCid", response.cid);
+    "preferences": [
+      {
+        "$type": "app.bsky.actor.defs#privateProfilePref",
+        "isPrivate": false
+      }
+    ]
   }
 }
 
@@ -38,19 +35,19 @@ docs {
   Sets the user's profile to public mode (default behavior).
   
   ## Request Body
-  - `isPrivate` (boolean): Set to false to make profile public
+  - `preferences` (array): Array of preference objects
+    - `$type`: "app.bsky.actor.defs#privateProfilePref"
+    - `isPrivate` (boolean): Set to false to make profile public
   
   ## Response
-  Returns the created/updated privacy settings record:
-  - `uri`: AT URI of the privacy settings record
-  - `cid`: Content ID of the record
+  Returns empty response (200 OK) if successful.
   
   ## Test Scenario
   Used to revert a profile back to public:
   1. User authenticates
-  2. User sets privacy to public
-  3. Verify settings updated
+  2. User sets privacy to public using putPreferences
+  3. Verify settings updated with getPreferences
   4. Profile is now visible to all users
   
-  **Note:** Privacy settings URI is automatically saved to `{{privacySettingsUri}}` for use in other requests.
+  **Note:** This uses the standard Bluesky preferences API.
 }

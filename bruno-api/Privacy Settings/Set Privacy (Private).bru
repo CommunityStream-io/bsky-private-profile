@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/xrpc/com.community.actor.setPrivacySettings
+  url: {{baseUrl}}/xrpc/app.bsky.actor.putPreferences
   body: json
   auth: bearer
 }
@@ -20,15 +20,12 @@ headers {
 
 body:json {
   {
-    "isPrivate": true
-  }
-}
-
-script:post-response {
-  const response = res.getBody();
-  if (response.uri) {
-    bru.setVar("privacySettingsUri", response.uri);
-    bru.setVar("privacySettingsCid", response.cid);
+    "preferences": [
+      {
+        "$type": "app.bsky.actor.defs#privateProfilePref",
+        "isPrivate": true
+      }
+    ]
   }
 }
 
@@ -38,19 +35,19 @@ docs {
   Sets the user's profile to private mode.
   
   ## Request Body
-  - `isPrivate` (boolean): Set to true to make profile private
+  - `preferences` (array): Array of preference objects
+    - `$type`: "app.bsky.actor.defs#privateProfilePref"
+    - `isPrivate` (boolean): Set to true to make profile private
   
   ## Response
-  Returns the created/updated privacy settings record:
-  - `uri`: AT URI of the privacy settings record
-  - `cid`: Content ID of the record
+  Returns empty response (200 OK) if successful.
   
   ## Test Scenario
   Part of "Make Profile Private" workflow:
   1. User authenticates
-  2. User sets privacy to private
-  3. Verify settings updated
+  2. User sets privacy to private using putPreferences
+  3. Verify settings updated with getPreferences
   4. Other users will need to send follow requests
   
-  **Note:** Privacy settings URI is automatically saved to `{{privacySettingsUri}}` for use in other requests.
+  **Note:** This uses the standard Bluesky preferences API.
 }

@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{baseUrl}}/xrpc/com.community.graph.createFollowRequest
+  url: {{baseUrl}}/xrpc/com.atproto.repo.createRecord
   body: json
   auth: bearer
 }
@@ -20,7 +20,14 @@ headers {
 
 body:json {
   {
-    "subject": "{{targetDid}}"
+    "repo": "{{did}}",
+    "collection": "app.bsky.graph.followRequest",
+    "record": {
+      "$type": "app.bsky.graph.followRequest",
+      "subject": "{{targetDid}}",
+      "status": "pending",
+      "createdAt": "{{$isoTimestamp}}"
+    }
   }
 }
 
@@ -35,32 +42,39 @@ script:post-response {
 docs {
   # Create Follow Request
   
-  Sends a follow request to a user with a private profile.
+  Creates a follow request record for a user with a private profile.
   
   ## Request Body
-  - `subject` (string): DID of the user to follow
+  - `repo` (string): Your DID ({{did}})
+  - `collection` (string): "app.bsky.graph.followRequest"
+  - `record` (object):
+    - `$type`: "app.bsky.graph.followRequest"
+    - `subject` (string): DID of the user to follow
+    - `status` (string): "pending"
+    - `createdAt` (string): ISO 8601 timestamp
   
   ## Response
-  Returns the created follow request record:
+  Returns the created record:
   - `uri`: AT URI of the follow request record
   - `cid`: Content ID of the record
   
   ## Behavior
-  - Only works if the target profile is private
-  - Prevents duplicate requests (one pending request per requester/subject pair)
-  - Creates a record with status "pending"
-  - If profile is public, this should fail (use normal follow instead)
+  - Creates a record in your repository
+  - Record has status "pending" initially
+  - Target user can list incoming requests using backlinks
+  - Target user can approve/deny by updating the record status
   
   ## Test Scenario
   Part of "Follow Request Flow":
   1. Alice has a private profile
   2. Bob authenticates
-  3. Bob sends follow request to Alice
+  3. Bob creates follow request record to Alice
   4. Verify request created with status "pending"
-  5. Alice can now see Bob's request in her incoming requests
+  5. Alice can query for incoming requests by subject (her DID)
   
   **Environment Variables Required:**
+  - `{{did}}`: Your DID (set automatically on login)
   - `{{targetDid}}`: Set this to the DID of the private profile to follow
   
-  **Note:** Follow request URI is automatically saved to `{{followRequestUri}}` for use in approval/denial.
+  **Note:** Follow request URI is automatically saved to `{{followRequestUri}}` for use in updates.
 }

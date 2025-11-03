@@ -5,7 +5,7 @@ meta {
 }
 
 get {
-  url: {{baseUrl}}/xrpc/com.community.graph.listFollowRequests?direction=incoming&status=pending&limit=50
+  url: {{baseUrl}}/xrpc/com.atproto.repo.listRecords?repo={{did}}&collection=app.bsky.graph.followRequest&limit=50
   body: none
   auth: bearer
 }
@@ -15,39 +15,35 @@ auth:bearer {
 }
 
 params:query {
-  direction: incoming
-  status: pending
+  repo: {{did}}
+  collection: app.bsky.graph.followRequest
   limit: 50
 }
 
 docs {
   # List Incoming Requests
   
-  Lists follow requests that other users have sent to you (requests to follow your private profile).
+  Lists follow request records where YOU are the subject (incoming requests).
   
   ## Query Parameters
-  - `direction` (string): "incoming" - requests sent to you
-  - `status` (string, optional): Filter by status ("pending", "approved", "denied")
+  - `repo` (string): Your DID (to list records from your repo)
+  - `collection` (string): "app.bsky.graph.followRequest"
   - `limit` (number, optional): Maximum number of results (default: 50)
   - `cursor` (string, optional): Pagination cursor
   
   ## Response
-  Returns a list of follow requests:
+  Returns a list of records:
   ```json
   {
-    "requests": [
+    "records": [
       {
-        "uri": "at://did:plc:xxx/com.community.graph.followRequest/xxx",
+        "uri": "at://did:plc:requester/app.bsky.graph.followRequest/xxx",
         "cid": "...",
         "value": {
+          "$type": "app.bsky.graph.followRequest",
           "subject": "did:plc:your-did",
           "status": "pending",
           "createdAt": "2024-01-01T00:00:00.000Z"
-        },
-        "requester": {
-          "did": "did:plc:requester-did",
-          "handle": "bob.example.com",
-          "displayName": "Bob"
         }
       }
     ],
@@ -55,14 +51,19 @@ docs {
   }
   ```
   
+  **Note:** To find incoming requests (where you are the subject), you need to:
+  1. Query the backlink index, OR
+  2. Implement a custom query endpoint, OR
+  3. List all follow requests and filter by subject=your-did
+  
+  This endpoint currently lists requests FROM you. For a proper implementation,
+  you'll need additional AppView support or custom PDS endpoints to query by subject.
+  
   ## Test Scenario
   Part of "Follow Request Flow":
-  1. Alice has a private profile
-  2. Bob sends follow request to Alice
-  3. Alice authenticates
-  4. Alice lists incoming requests
-  5. Verify Bob's request appears in the list
-  6. Alice can then approve or deny the request
+  1. Bob creates follow request to Alice
+  2. Alice needs to query for records where subject=Alice's DID
+  3. This requires backlink queries or custom endpoints
   
-  **Common Use Case:** Show a list of pending follow requests in the UI for the user to review.
+  **TODO:** Implement proper incoming request query using backlinks or custom endpoint.
 }
