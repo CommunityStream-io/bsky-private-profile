@@ -40,7 +40,7 @@ Error: Could not locate the bindings file
 Module: better-sqlite3
 ```
 
-**Solution:** Use Node 20
+**Solution:** Use Node 20 with proper SDK headers (Mac)
 
 ```bash
 # Check current version
@@ -51,6 +51,10 @@ node --version
 nvm install 20
 nvm use 20
 
+# Set SDK headers for C++ compilation (Mac only)
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
 # Reinstall dependencies
 cd atproto
 rm -rf node_modules
@@ -58,9 +62,11 @@ pnpm install
 pnpm -r build
 ```
 
-**Why Node 20?**
+**Why Node 20 with SDK headers?**
 
 - Node 24+ breaks `better-sqlite3` native module
+- `better-sqlite3@10.0.0` may not have prebuilt binaries for all platforms
+- SDK headers allow successful compilation from source on macOS
 - Project is tested and configured for Node 20 LTS
 - `.nvmrc` file specifies Node 20
 
@@ -469,6 +475,11 @@ npm run test:sqlite -- --testPathPattern="your-test.test.ts"
 # From atproto root
 nvm use 20
 npm install -g pnpm@8.15.9
+
+# Set SDK headers for better-sqlite3 compilation (Mac)
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
 pnpm install
 pnpm build
 
@@ -512,25 +523,50 @@ pnpm rebuild better-sqlite3
 ```
 fatal error: 'climits' file not found
 error MSB8020: The build tools cannot be found (Windows)
+prebuild-install: command not found
 ```
 
-**Solution: Use Node with Prebuilt Binaries**
+**Solution 1: Compile with SDK Headers (Mac - RECOMMENDED)**
 
-**Don't try to fix C++ toolchain issues!** Instead:
+If prebuilt binaries aren't available for your Node version, compile with proper C++ headers:
 
 ```bash
-# Use Node 18 or 20 (has prebuilt binaries)
+# Switch to Node 20
 nvm use 20
+
+# Set SDK path for C++ headers
+cd atproto
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
+# Clean install with proper headers
+rm -rf node_modules
+pnpm install
+```
+
+**Why This Works:**
+
+- Sets the macOS SDK root for the compiler
+- Points to C++ standard library headers
+- Allows compilation when prebuilt binaries aren't available
+
+**Solution 2: Try Node 18 First**
+
+Node 18 may have better prebuilt binary availability:
+
+```bash
+nvm use 18
 cd atproto
 rm -rf node_modules
 pnpm install
 ```
 
-**If you must compile:**
+**If compilation still fails:**
 
 **Mac:**
 
 ```bash
+# Ensure Xcode Command Line Tools are installed
 xcode-select --install
 ```
 
