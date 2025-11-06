@@ -15,6 +15,8 @@ Quick reference for common issues across all components.
 | **App won't connect**    | Bluesky App | Check service URLs                | [Connection](#app-connection-issues)              |
 | **Metro bundler errors** | Bluesky App | Create root node_modules          | [Metro](#metro-bundler-issues)                    |
 | **Missing locale files** | Bluesky App | Run `yarn intl:compile`           | [Locales](#missing-locale-files)                  |
+| **Tests won't run**      | Tests       | Use Node 18/20                    | [Testing](#testing-issues)                        |
+| **better-sqlite3 error** | Tests       | Switch to Node 20                 | [Testing](#testing-issues)                        |
 
 ## Component-Specific Guides
 
@@ -38,7 +40,7 @@ Error: Could not locate the bindings file
 Module: better-sqlite3
 ```
 
-**Solution:** Use Node 20
+**Solution:** Use Node 20 with proper SDK headers (Mac)
 
 ```bash
 # Check current version
@@ -49,6 +51,10 @@ node --version
 nvm install 20
 nvm use 20
 
+# Set SDK headers for C++ compilation (Mac only)
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
 # Reinstall dependencies
 cd atproto
 rm -rf node_modules
@@ -56,9 +62,11 @@ pnpm install
 pnpm -r build
 ```
 
-**Why Node 20?**
+**Why Node 20 with SDK headers?**
 
 - Node 24+ breaks `better-sqlite3` native module
+- `better-sqlite3@10.0.0` may not have prebuilt binaries for all platforms
+- SDK headers allow successful compilation from source on macOS
 - Project is tested and configured for Node 20 LTS
 - `.nvmrc` file specifies Node 20
 
@@ -399,6 +407,264 @@ yarn intl:compile
 - First time running app
 - After pulling updates
 - After changing translation files
+
+## Testing Issues
+
+### Running PDS Tests
+
+#### "Could not locate the bindings file" in Tests
+
+**Problem:** Tests fail with `better-sqlite3` native binding errors
+
+**Error:**
+
+```
+Could not locate the bindings file. Tried:
+ → .../better-sqlite3/lib/binding/node-v127-darwin-x64/better_sqlite3.node
+ → .../better-sqlite3/lib/binding/node-v115-darwin-x64/better_sqlite3.node
+```
+
+**Root Cause:**
+
+- Node 22+ has no prebuilt binaries for `better-sqlite3` v10.0.0
+- C++ compilation fails due to missing headers or incompatible toolchain
+- The test environment requires working SQLite bindings
+
+**Solution: Use Node 18 or 20**
+
+```bash
+# Switch to Node 20 (recommended)
+nvm use 20
+
+# Or Node 18
+nvm use 18
+
+# Install pnpm for the Node version
+npm install -g pnpm@8.15.9
+
+# Reinstall dependencies
+cd atproto
+pnpm install
+
+# Rebuild native modules
+pnpm rebuild better-sqlite3
+
+# Run tests
+cd packages/pds
+npm run test:sqlite -- --testPathPattern="your-test.test.ts"
+```
+
+**Why This Works:**
+
+- Node 18/20 have prebuilt binaries available
+- Avoids C++ compilation issues entirely
+- Matches the project's tested configuration
+
+#### Test Setup Requirements
+
+**Prerequisites for running PDS tests:**
+
+1. **Correct Node version** (18 or 20)
+2. **Dependencies installed** (`pnpm install`)
+3. **Packages built** (`pnpm -r build`)
+4. **Dev-env package compiled** (automatically built with pnpm -r build)
+
+**Quick test setup:**
+
+```bash
+# From atproto root
+nvm use 20
+npm install -g pnpm@8.15.9
+
+# Set SDK headers for better-sqlite3 compilation (Mac)
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
+pnpm install
+pnpm build
+
+# Run specific test
+cd packages/pds
+npm run test:sqlite -- --testPathPattern="follow-requests.test.ts"
+```
+
+#### Python/Setuptools Missing (Mac)
+
+**Problem:** `node-gyp` fails with "No module named 'distutils'"
+
+**Error:**
+
+```
+ModuleNotFoundError: No module named 'distutils'
+gyp ERR! configure error
+```
+
+**Cause:** Python 3.13+ removed `distutils` module
+
+**Solution:**
+
+```bash
+# Install setuptools for Python 3.13
+python3.13 -m pip install setuptools --break-system-packages
+
+# Then rebuild
+cd atproto
+pnpm rebuild better-sqlite3
+```
+
+**Better Solution:** Use Node 18/20 which have prebuilt binaries (no compilation needed)
+
+#### C++ Compilation Errors
+
+**Problem:** `better-sqlite3` won't compile
+
+**Errors:**
+
+```
+fatal error: 'climits' file not found
+error MSB8020: The build tools cannot be found (Windows)
+prebuild-install: command not found
+```
+
+**Solution 1: Compile with SDK Headers (Mac - RECOMMENDED)**
+
+If prebuilt binaries aren't available for your Node version, compile with proper C++ headers:
+
+```bash
+# Switch to Node 20
+nvm use 20
+
+# Set SDK path for C++ headers
+cd atproto
+export SDKROOT=$(xcrun --show-sdk-path)
+export CXXFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/c++/v1"
+
+# Clean install with proper headers
+rm -rf node_modules
+pnpm install
+```
+
+**Why This Works:**
+
+- Sets the macOS SDK root for the compiler
+- Points to C++ standard library headers
+- Allows compilation when prebuilt binaries aren't available
+
+**Solution 2: Try Node 18 First**
+
+Node 18 may have better prebuilt binary availability:
+
+```bash
+nvm use 18
+cd atproto
+rm -rf node_modules
+pnpm install
+```
+
+**If compilation still fails:**
+
+**Mac:**
+
+```bash
+# Ensure Xcode Command Line Tools are installed
+xcode-select --install
+```
+
+**Windows:**
+
+- Install [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+- Select "Desktop development with C++"
+
+**Linux:**
+
+```bash
+sudo apt-get install build-essential python3
+```
+
+#### Test Database Locked
+
+**Problem:** "Database is locked" error during tests
+
+**Cause:** Previous test run didn't clean up properly
+
+**Solution:**
+
+```bash
+# Kill any running Node processes
+pkill -f node
+
+# Clean test databases
+cd atproto/packages/pds
+rm -rf .test-dbs
+
+# Run tests again
+npm run test:sqlite
+```
+
+#### Tests Hang or Timeout
+
+**Problem:** Tests start but never complete
+
+**Common causes:**
+
+1. **Missing `afterAll` cleanup** - Tests don't close database connections
+2. **Port conflicts** - Test can't bind to required port
+3. **Resource leaks** - Previous test didn't release resources
+
+**Solutions:**
+
+```bash
+# Run with detect-open-handles to find leaks
+npm run test:sqlite -- --detectOpenHandles --testPathPattern="your-test.test.ts"
+
+# Kill processes on test ports
+lsof -ti:2583 | xargs kill -9
+
+# Run single test file to isolate issue
+npm run test:sqlite -- --testPathPattern="specific-test.test.ts"
+```
+
+#### Dev-Env Package Not Found
+
+**Problem:** Tests fail with "Cannot find module '@atproto/dev-env'"
+
+**Error:**
+
+```
+Cannot find module '@atproto/dev-env'
+```
+
+**Cause:** Dev dependencies not built
+
+**Solution:**
+
+```bash
+cd atproto
+
+# Build all packages (including dev-env)
+pnpm build
+
+# Or build just dev-env and dependencies
+pnpm --filter @atproto/dev-env... build
+
+# Verify it's built
+ls packages/dev-env/dist  # Should contain compiled files
+```
+
+#### Test Results Reference
+
+**Expected results for privacy feature tests:**
+
+```bash
+# Privacy preferences tests
+npm run test:sqlite -- --testPathPattern="preferences.test.ts"
+# Expected: 17 passed (all privacy settings tests)
+
+# Follow requests tests
+npm run test:sqlite -- --testPathPattern="follow-requests.test.ts"
+# Expected: 7 passed, 2 failed
+# Note: 2 backlink tests expected to fail (feature not fully implemented)
+```
 
 ## Database Issues
 
