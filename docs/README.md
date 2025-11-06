@@ -52,6 +52,8 @@ IPFS private gateway service:
 
 Understand the system architecture:
 
+- **[Private Profiles Overview](architecture/private-profiles-overview.md)** - Implementation with diagrams ⭐
+- [Architecture Documentation](architecture/README.md) - Complete architecture guide
 - [System Overview](architecture/overview.md) - Overall system architecture
 - [AT Protocol](architecture/at-protocol.md) - AT Protocol concepts
 - [Component Interaction](architecture/components.md) - How components work together
@@ -75,6 +77,13 @@ Quick reference documentation:
 - [Contributing](reference/contributing.md) - How to contribute
 - [Security](reference/security.md) - Security considerations
 - [Testing](reference/testing.md) - Testing guidelines
+
+## 🤝 Community
+
+Community engagement and collaboration:
+
+- [Discussion Post Draft](community/discussion-post.md) - Message for AT Protocol team
+- [GitHub Issue #38](https://github.com/CommunityStream-io/bsky-private-profile/issues/38) - Community coordination
 
 ## 🔍 Quick Links
 

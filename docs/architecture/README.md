@@ -2,6 +2,15 @@
 
 Understanding the architecture of the Bluesky Private Profile Integration project and the AT Protocol.
 
+## Private Profiles Implementation
+
+> **For AT Protocol team:** See [Private Profiles Overview](./private-profiles-overview.md) for technical details with sequence and component diagrams.
+
+**Quick Links:**
+- **[Private Profiles Overview](./private-profiles-overview.md)** - Technical architecture with diagrams
+- **[Discussion Post Draft](../community/discussion-post.md)** - Message for AT Protocol team
+- **[Implementation Phases](../reference/phases.md)** - Development roadmap
+
 ## Overview
 
 This project integrates multiple components to extend Bluesky with private profile functionality:

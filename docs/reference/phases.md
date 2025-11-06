@@ -92,7 +92,49 @@ Phased approach to implementing Instagram-style private profiles for Bluesky.
 
 **Can be done locally:** ✅ Yes
 
-### 2.1 Read Access Control
+### 2.1 Community Coordination & Access Control
+
+#### 2.1.1 Community Outreach & Collaboration (PREREQUISITE)
+
+**Goal:** Coordinate with AT Protocol team and community before implementing access control/UI modifications.
+
+**GitHub Issue:** [#38 - Collaborate with AT Protocol team on private profiles implementation](https://github.com/CommunityStream-io/bsky-private-profile/issues/38)
+
+**Discussion:** [Support for Private Accounts #1409](https://github.com/bluesky-social/atproto/discussions/1409)
+
+**Context from AT Protocol Team:**
+
+The Bluesky team has confirmed that private profiles are on the official roadmap for Spring/Summer 2025. Key insights from the discussion:
+
+- **Official Roadmap:** "Privately Shared Data and E2EE DMs" planned for Spring/Summer 2025
+- **Architecture:** Will use different data architecture than public MST + firehose system
+- **Dependency:** Implementation depends on Auth Scopes being completed first
+- **Our Approach:** PDS-level private profiles with Pinata private IPFS gateways can provide interim solution for self-hosters
+
+**Key Participants:**
+- @bnewbold (AT Protocol Maintainer) - Leading private data design
+- @straiforos (You) - Proposed PDS + Pinata gateway approach
+- Community members - Strong interest in privacy features for legal/safety reasons
+
+**Tasks:**
+- [ ] Review latest atproto discussion comments for protocol updates
+- [ ] Post in discussion thread sharing our implementation approach
+  - Highlight PDS-level privacy with Pinata private gateways
+  - Share lexicon definitions for community feedback
+  - Emphasize this is for self-hosted PDS instances
+- [ ] Ask protocol team about lexicon namespace compatibility
+- [ ] Clarify timeline for official Auth Scopes completion
+- [ ] Document any concerns or requirements from maintainers
+- [ ] Coordinate naming to avoid conflicts with official implementation
+- [ ] Update roadmap if official approach differs significantly
+
+**Deliverable:** Community feedback incorporated, lexicon approach validated
+
+**Blocks:** Phase 3 (Frontend UI) - Must validate approach before building UI
+
+---
+
+#### 2.1.2 Read Access Control Implementation
 
 - [ ] Check if requester has access to private profile
 - [ ] Implement access check middleware
