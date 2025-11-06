@@ -28,7 +28,7 @@ I've documented the architecture with sequence and component diagrams showing:
 - Access control enforcement
 - Private media token generation
 
-**📄 Full Technical Overview:** [Private Profiles Implementation](https://github.com/CommunityStream-io/bsky-private-profile/blob/main/docs/architecture/private-profiles-overview.md)
+**📄 Full Technical Overview:** [Private Profiles Implementation](https://github.com/CommunityStream-io/bsky-private-profile/blob/phase-1-3-api-endpoints/docs/architecture/private-profiles-overview.md)
 
 ### Guidance Needed
 
@@ -37,7 +37,7 @@ As a new contributor to the AT Protocol ecosystem, I'd love guidance on a few ke
 1. **Architecture Review** - Are there any architectural concerns or gotchas I should be aware of with this PDS-level approach? What should I look out for to ensure compatibility with the protocol's evolution?
 2. **Community Coordination** - How can I best coordinate with the official roadmap?
 
-**See full questions:** [Technical Overview - Questions Section](https://github.com/CommunityStream-io/bsky-private-profile/blob/main/docs/architecture/private-profiles-overview.md#questions-for-protocol-team)
+**See full questions:** [Technical Overview - Questions Section](https://github.com/CommunityStream-io/bsky-private-profile/blob/phase-1-3-api-endpoints/docs/architecture/private-profiles-overview.md#questions-for-protocol-team)
 
 ### Scope
 
@@ -52,4 +52,4 @@ Happy to adjust the approach based on your guidance. Thanks for considering! �
 
 ---
 
-**Related:** [Full Roadmap](https://github.com/CommunityStream-io/bsky-private-profile/blob/main/docs/reference/phases.md) | [Project Board](https://github.com/orgs/CommunityStream-io/projects/3)
+**Related:** [Full Roadmap](https://github.com/CommunityStream-io/bsky-private-profile/blob/phase-1-3-api-endpoints/docs/reference/phases.md) | [Project Board](https://github.com/orgs/CommunityStream-io/projects/3)
